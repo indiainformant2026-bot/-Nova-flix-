@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>NovaFlix - Installable App</title>
+    
+    <!-- PWA Link -->
+    <link rel="manifest" href="./manifest.json">
+    <meta name="theme-color" content="#E50914">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+
+    <script>
+        tailwind.config = { theme: { extend: { colors: { netflix: '#141414', netflixRed: '#E50914', dark: '#0f1014' } } } }
+    </script>
+    
+    <style>
+        body { background-color: #141414; color: #fff; font-family: 'Segoe UI', sans-serif; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; overflow-x: hidden; touch-action: manipulation; }
+        .hide-scroll::-webkit-scrollbar { display: none; }
+        .app-screen { display: none; animation: fadeIn 0.3s; }
+        .app-screen.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 99999; justify-content: center; align-items: center; padding: 10px; }
+        .modal-overlay.active { display: flex; animation: fadeIn 0.2s; }
+        
+        .cat-pill { padding: 6px 16px; border-radius: 20px; background: #1a1d24; border: 1px solid #333; font-size: 11px; font-weight: bold; color: #aaa; cursor: pointer; white-space: nowrap; }
+        .cat-pill.active-pill { background: #E50914; color: #fff; border-color: #E50914; box-shadow: 0 0 10px rgba(229,9,20,0.4); }
+        .movie-card { border-radius: 4px; overflow: hidden; position: relative; cursor: pointer; background: #1f1f1f; box-shadow: 0 4px 6px rgba(0,0,0,0.5); }
+        .slider-container { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; scroll-behavior: smooth; gap: 10px; padding: 10px; }
+        .slider-item { scroll-snap-align: start; flex: 0 0 80%; max-width: 300px; position: relative; border-radius: 8px; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.5); }
+        .ad-banner { width: 100%; background-color: #2b2b2b; color: #888; text-align: center; padding: 20px 0; border: 1px dashed #555; font-size: 12px; margin: 10px 0; display: flex; justify-content: center; align-items: center; border-radius: 4px; }
+        input, textarea, select { user-select: text; -webkit-user-select: text; outline: none; }
+    </style>
+</head>
+<body oncontextmenu="return false;">
+
+<div class="w-full min-h-screen pb-20 relative bg-dark">
+    
+    <!-- TOP HEADER -->
+    <div class="flex justify-between items-center p-3 bg-black/95 sticky top-0 z-50 shadow-md border-b border-gray-800">
+        
+        <div id="brand-logo" class="flex items-center gap-2 cursor-pointer group">
+            <div class="relative flex items-center justify-center w-8 h-8 bg-gradient-to-br from-red-500 to-red-900 rounded-lg shadow-[0_0_12px_rgba(229,9,20,0.6)]">
+                <i class="fa-solid fa-play text-white text-[10px] ml-0.5"></i>
+            </div>
+            <h1 class="text-2xl font-black tracking-widest uppercase"><span class="text-white">NOVA</span><span class="text-[#E50914]">FLIX</span></h1>
+        </div>
+
+        <div class="flex gap-4 text-white text-lg items-center">
+            <!-- PWA INSTALL APP BUTTON (Hidden by default, shown by JS) -->
+            <button id="install-app-btn" class="hidden bg-[#0088cc] text-white text-xs font-bold px-3 py-1.5 rounded animate-pulse shadow-[0_0_10px_rgba(0,136,204,0.6)]" onclick="installPWA()">Install App</button>
+            <i class="fa-solid fa-magnifying-glass" onclick="switchScreen('screen-search')"></i>
+        </div>
+    </div>
+
+    <!-- 🏠 HOME SCREEN -->
+    <div id="screen-home" class="app-screen active">
+        <div id="category-tabs" class="flex space-x-3 overflow-x-auto hide-scroll px-3 py-3 bg-[#0f121a] sticky top-[52px] z-40 border-b border-gray-800">
+            <span class="cat-pill active-pill" onclick="filterCategory('All', this)">All Movies</span>
+        </div>
+        <div class="slider-container hide-scroll" id="top-slider"></div>
+        <div class="p-2 mt-2">
+            <h2 class="text-sm font-bold text-white mb-3 border-l-2 border-netflixRed pl-2" id="grid-title">Trending Now</h2>
+            <div class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-2" id="movies-grid"></div>
+        </div>
+    </div>
+
+    <!-- ⬇️ DOWNLOADS SCREEN -->
+    <div id="screen-downloads" class="app-screen p-3">
+        <h2 class="text-lg font-bold text-white mb-2 border-l-2 border-blue-500 pl-2">My Downloads</h2>
+        <div class="grid grid-cols-3 sm:grid-cols-4 gap-2" id="downloads-grid"></div>
+    </div>
+
+    <!-- 🔍 SEARCH SCREEN -->
+    <div id="screen-search" class="app-screen p-3">
+        <div class="flex bg-[#2b2b2b] rounded mb-4 border border-gray-700">
+            <i class="fa-solid fa-magnifying-glass text-gray-400 p-3 text-sm"></i>
+            <input type="text" id="search-input" placeholder="Search movies..." class="w-full bg-transparent text-sm text-white outline-none" onkeyup="searchContent()">
+        </div>
+        <div id="search-results" class="grid grid-cols-3 sm:grid-cols-4 gap-2"></div>
+    </div>
+
+    <!-- 📺 PLAYER MODAL -->
+    <div id="player-modal" class="modal-overlay">
+        <div class="bg-netflix w-full max-w-2xl rounded-lg overflow-hidden shadow-2xl relative flex flex-col max-h-[95vh] border border-gray-800">
+            <button onclick="closeModal('player-modal')" class="absolute top-2 right-2 text-white bg-black/80 w-8 h-8 rounded-full z-50"><i class="fa-solid fa-xmark"></i></button>
+            <div class="w-full aspect-video bg-black shrink-0 relative"><iframe id="video-frame" class="w-full h-full" src="" frameborder="0" allowfullscreen></iframe></div>
+            <div class="p-4 overflow-y-auto">
+                <h1 id="play-title" class="text-lg font-bold mb-1 text-white">Movie Title</h1>
+                <div class="ad-banner h-12">Ad Placement (Top)</div>
+                <button onclick="openModal('quality-modal')" class="w-full bg-[#0088cc] text-white font-bold py-3 rounded text-sm shadow-lg active:scale-95 flex justify-center items-center gap-2 mb-2"><i class="fa-solid fa-download"></i> Download Movie</button>
+                <div class="ad-banner h-12">Ad Placement (Bottom)</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ⚙️ AD FLOW MODALS -->
+    <div id="quality-modal" class="modal-overlay">
+        <div class="bg-[#1f232b] p-4 rounded w-full max-w-sm text-center">
+            <h3 class="text-lg font-bold mb-4 text-white">Select Quality</h3>
+            <div class="flex flex-col gap-2 mb-4">
+                <button onclick="startAdTimer()" class="bg-[#2b303b] p-3 rounded font-bold text-sm text-gray-200">1080p Full HD</button>
+                <button onclick="startAdTimer()" class="bg-[#2b303b] p-3 rounded font-bold text-sm text-gray-200">720p HD</button>
+            </div>
+            <div class="ad-banner h-16">Native Ad</div>
+        </div>
+    </div>
+
+    <div id="ad-timer-modal" class="modal-overlay" style="background: rgba(0,0,0,0.98);">
+        <div class="text-center w-full max-w-md p-4">
+            <h2 class="text-xl font-bold text-netflixRed mb-2">Generating Link...</h2>
+            <div class="w-full h-48 bg-[#141414] border border-gray-700 flex justify-center items-center mb-6"><span class="text-gray-600 text-xs">[ Video Ad Playing Here ]</span></div>
+            <div class="text-5xl font-black text-white mb-6" id="countdown-timer">30</div>
+            <div id="final-dl-buttons" class="hidden flex flex-col gap-3">
+                <button onclick="execute1DM()" class="bg-[#0088cc] text-white font-bold py-3 rounded text-sm"><i class="fa-solid fa-bolt"></i> Download (1DM)</button>
+                <button onclick="executeDirect()" class="bg-[#2b2b2b] text-white font-bold py-3 rounded text-sm"><i class="fa-solid fa-globe"></i> Browser Download</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 📝 REQUEST MOVIE (Anti-Spam) -->
+    <button onclick="openModal('request-modal')" class="fixed bottom-16 right-4 bg-netflixRed w-12 h-12 rounded-full flex justify-center items-center shadow-lg z-40 active:scale-95">
+        <i class="fa-solid fa-paper-plane text-white text-lg"></i>
+    </button>
+
+    <div id="request-modal" class="modal-overlay">
+        <div class="bg-[#14161c] p-6 rounded w-full max-w-sm border border-gray-800 relative">
+            <button onclick="closeModal('request-modal')" class="absolute top-2 right-2 text-gray-400"><i class="fa-solid fa-xmark"></i></button>
+            <h2 class="text-lg font-bold text-white mb-2">Request a Movie</h2>
+            <p class="text-[10px] text-gray-400 mb-4">Max 2 requests per day to prevent spam.</p>
+            <input type="text" id="req-movie-name" placeholder="Enter Movie Name" class="w-full bg-black p-3 rounded mb-4 text-sm text-white border border-gray-700">
+            <button onclick="submitRequest()" class="w-full bg-netflixRed text-white font-bold py-2.5 rounded text-sm">Send Request</button>
+        </div>
+    </div>
+
+    <!-- 🛡️ ADMIN MODALS -->
+    <div id="admin-login-modal" class="modal-overlay">
+        <div class="bg-[#14161c] p-6 rounded w-full max-w-sm border border-gray-800 relative">
+            <button onclick="closeModal('admin-login-modal')" class="absolute top-2 right-2 text-gray-400"><i class="fa-solid fa-xmark"></i></button>
+            <h2 class="text-xl font-bold text-white mb-6 text-center">Admin Login</h2>
+            <input type="email" id="admin-email" placeholder="Email" class="w-full bg-black p-3 rounded mb-3 text-sm text-white border border-gray-700">
+            <input type="password" id="admin-password" placeholder="Password" class="w-full bg-black p-3 rounded mb-5 text-sm text-white border border-gray-700">
+            <button onclick="loginAdmin()" class="w-full bg-netflixRed text-white font-bold py-3 rounded text-sm">Login</button>
+        </div>
+    </div>
+
+    <div id="admin-dash-modal" class="modal-overlay">
+        <div class="bg-[#14161c] w-full max-w-4xl h-[90vh] rounded border border-gray-700 flex flex-col">
+            <div class="p-3 border-b border-gray-800 flex justify-between items-center bg-black">
+                <h2 class="text-lg font-bold text-netflixRed">Admin Panel</h2>
+                <div class="flex gap-3"><button onclick="logoutAdmin()" class="text-xs bg-gray-800 text-white px-3 py-1.5 rounded">Logout</button><button onclick="closeModal('admin-dash-modal')" class="text-gray-400"><i class="fa-solid fa-xmark"></i></button></div>
+            </div>
+            <div class="p-3 overflow-y-auto flex-1">
+                
+                <!-- Manage Requests -->
+                <div class="bg-[#1a1d24] p-3 rounded mb-4 border border-gray-800">
+                    <h3 class="font-bold text-xs mb-3 text-orange-400">User Requests (New)</h3>
+                    <div id="admin-req-list" class="flex flex-wrap gap-2"></div>
+                </div>
+
+                <!-- Add Category & Movie Forms (Same as before) -->
+                <div class="bg-[#1a1d24] p-3 rounded mb-4 border border-gray-800">
+                    <h3 class="font-bold text-xs mb-3 text-green-400">Manage Categories</h3>
+                    <div class="flex gap-2 mb-3">
+                        <input type="text" id="new-cat" placeholder="Category Name" class="flex-1 bg-black p-2 rounded text-xs text-white">
+                        <button onclick="addCategory()" class="bg-green-600 text-white font-bold px-4 rounded text-xs">Add</button>
+                    </div><div id="admin-cat-list" class="flex flex-wrap gap-2"></div>
+                </div>
+
+                <div class="bg-[#1a1d24] p-3 rounded mb-4 border border-gray-800">
+                    <h3 class="font-bold text-xs mb-3 text-blue-400">Add New Movie</h3>
+                    <div class="grid grid-cols-2 gap-2">
+                        <input type="text" id="m-title" placeholder="Movie Title" class="col-span-2 bg-black p-2 rounded text-xs text-white">
+                        <input type="text" id="m-poster" placeholder="Vertical Poster URL" class="col-span-2 bg-black p-2 rounded text-xs text-white">
+                        <input type="text" id="m-banner" placeholder="Horizontal Banner URL" class="col-span-2 bg-black p-2 rounded text-xs text-white">
+                        <select id="m-cat-select" class="col-span-2 bg-black p-2 rounded text-xs text-gray-400"><option value="">Select Category...</option></select>
+                        <input type="text" id="m-stream" placeholder="Stream Embed URL" class="col-span-2 bg-black p-2 rounded text-xs text-white">
+                        <input type="text" id="m-dl" placeholder="Direct Download Link" class="col-span-2 bg-black p-2 rounded text-xs text-white">
+                        <button onclick="addMovie()" class="col-span-2 bg-netflixRed text-white font-bold py-2 rounded text-xs">Publish Movie</button>
+                    </div>
+                </div>
+
+                <div class="bg-[#1a1d24] p-3 rounded border border-gray-800">
+                    <h3 class="font-bold text-xs mb-2 text-red-400">Manage Database</h3>
+                    <div id="admin-movie-list" class="space-y-2"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ⬇️ BOTTOM NAVIGATION -->
+    <div class="fixed bottom-0 w-full bg-[#0f121a] border-t border-gray-800 flex justify-around items-center px-2 py-2 z-40 text-[9px] font-bold text-gray-500 shadow-[0_-5px_15px_rgba(0,0,0,0.5)]">
+        <div class="bot-nav flex flex-col items-center text-white cursor-pointer" onclick="switchScreen('screen-home', this)"><i class="fa-solid fa-house text-base mb-1"></i>Home</div>
+        <div class="bot-nav flex flex-col items-center cursor-pointer" onclick="switchScreen('screen-search', this)"><i class="fa-solid fa-magnifying-glass text-base mb-1"></i>Search</div>
+        <div class="bot-nav flex flex-col items-center cursor-pointer" onclick="switchScreen('screen-downloads', this)"><i class="fa-solid fa-download text-base mb-1"></i>Downloads</div>
+    </div>
+</div>
+
+<script>
+    // Security
+    document.addEventListener('contextmenu', event => event.preventDefault());
+    document.onkeydown = function(e) { if(e.keyCode == 123 || (e.ctrlKey && e.shiftKey && (e.keyCode == 73 || e.keyCode == 74)) || (e.ctrlKey && e.keyCode == 85)) return false; };
+
+    // PWA & Service Worker Logic
+    if ('serviceWorker' in navigator) { window.addEventListener('load', () => { navigator.serviceWorker.register('./sw.js'); }); }
+    
+    let deferredPrompt;
+    window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault(); deferredPrompt = e;
+        document.getElementById('install-app-btn').classList.remove('hidden'); // Show button
+    });
+    function installPWA() {
+        if (deferredPrompt) {
+            deferredPrompt.prompt();
+            deferredPrompt.userChoice.then((choiceResult) => {
+                if (choiceResult.outcome === 'accepted') { document.getElementById('install-app-btn').classList.add('hidden'); }
+                deferredPrompt = null;
+            });
+        }
+    }
+
+    // Firebase Init
+    const firebaseConfig = { apiKey: "YOUR_API_KEY", authDomain: "YOUR_PROJECT_ID.firebaseapp.com", databaseURL: "https://YOUR_PROJECT_ID-default-rtdb.firebaseio.com", projectId: "YOUR_PROJECT_ID" };
+    if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+    const auth = firebase.auth();
+
+    window.onload = () => { checkAndSeedDB(); loadDownloads(); };
+
+    // Anti-Spam Movie Request Logic
+    function submitRequest() {
+        const mName = document.getElementById('req-movie-name').value;
+        if(!mName) return alert('Enter a movie name!');
+        
+        let reqData = JSON.parse(localStorage.getItem('novaflix_req')) || { date: '', count: 0 };
+        let today = new Date().toDateString();
+        
+        if(reqData.date !== today) { reqData = { date: today, count: 0 }; } // Reset on new day
+        if(reqData.count >= 2) return alert('Spam Protection: You can only request 2 movies per day!');
+        
+        db.ref('requests').push({ movie: mName, date: today }).then(() => {
+            reqData.count++; localStorage.setItem('novaflix_req', JSON.stringify(reqData));
+            alert('Request Sent Successfully!'); closeModal('request-modal'); document.getElementById('req-movie-name').value = '';
+        });
+    }
+
+    const defaultCats = ["Hollywood", "Bollywood", "K-Drama", "Web Series", "Action", "TV Shows"];
+    const dummyMovies = [ { title: "Chandu Champion", cat: "Bollywood", poster: "https://images.unsplash.com/photo-1535295972055-1c762f4483e5?q=80&w=300", banner: "https://images.unsplash.com/photo-1614730321146-b6fa6a46bcb4?q=80&w=600", stream: "https://www.youtube.com/embed/dQw4w9WgXcQ", dl: "#" }, { title: "Jailer", cat: "Action", poster: "https://images.unsplash.com/photo-1599839619722-39751411ea63?q=80&w=300", banner: "https://images.unsplash.com/photo-1509347528160-9a9e33742cdb?q=80&w=600", stream: "https://www.youtube.com/embed/dQw4w9WgXcQ", dl: "#" } ];
+
+    function checkAndSeedDB() {
+        db.ref('categories').once('value', snap => { if(!snap.exists()) { defaultCats.forEach(c => db.ref('categories').push({name: c})); } });
+        db.ref('movies').once('value', snap => { if(!snap.exists()) { dummyMovies.forEach(m => db.ref('movies').push(m)); } loadData(); });
+    }
+
+    let allMoviesArray = []; let currentActiveMovie = null;
+
+    function switchScreen(screenId, navElement = null) {
+        if(screenId !== 'player-modal') document.getElementById('video-frame').src = '';
+        document.querySelectorAll('.app-screen').forEach(el => el.classList.remove('active'));
+        document.getElementById(screenId).classList.add('active');
+        if(navElement) {
+            document.querySelectorAll('.bot-nav').forEach(el => { el.classList.remove('text-white'); el.classList.add('text-gray-500'); });
+            navElement.classList.remove('text-gray-500'); navElement.classList.add('text-white');
+        }
+    }
+
+    function loadData() {
+        // Cats & Requests (Admin)
+        db.ref('requests').on('value', snap => {
+            let reqHTML = '';
+            snap.forEach(c => { reqHTML += `<div class="bg-black px-2 py-1 rounded text-[10px] flex gap-2 items-center text-gray-300 border border-gray-700">${c.val().movie} <i class="fa-solid fa-xmark text-red-500 cursor-pointer" onclick="db.ref('requests/${c.key}').remove()"></i></div>`; });
+            document.getElementById('admin-req-list').innerHTML = reqHTML || '<span class="text-xs text-gray-500">No requests yet.</span>';
+        });
+
+        db.ref('categories').on('value', snap => {
+            const tabs = document.getElementById('category-tabs'); const adminList = document.getElementById('admin-cat-list'); const selectDropdown = document.getElementById('m-cat-select');
+            tabs.innerHTML = `<span class="cat-pill active-pill" onclick="filterCategory('All', this)">All Movies</span>`; adminList.innerHTML = ''; selectDropdown.innerHTML = `<option value="">Select Category...</option>`;
+            snap.forEach(c => { let catName = c.val().name; tabs.innerHTML += `<span class="cat-pill" onclick="filterCategory('${catName}', this)">${catName}</span>`; selectDropdown.innerHTML += `<option value="${catName}">${catName}</option>`; adminList.innerHTML += `<div class="bg-black px-2 py-1 rounded text-[10px] flex gap-2 items-center text-gray-300 border border-gray-700">${catName} <i class="fa-solid fa-xmark text-red-500 cursor-pointer" onclick="deleteCategory('${c.key}')"></i></div>`; });
+        });
+
+        db.ref('movies').on('value', snap => {
+            allMoviesArray = []; const adminList = document.getElementById('admin-movie-list'); adminList.innerHTML = '';
+            snap.forEach(c => { let m = c.val(); m.id = c.key; allMoviesArray.push(m); adminList.innerHTML += `<div class="bg-black p-2 rounded flex justify-between items-center text-[10px] border border-gray-800"><span class="truncate w-3/4 text-gray-300">${m.title}</span><i class="fa-solid fa-trash text-red-500 cursor-pointer" onclick="deleteMovie('${c.key}')"></i></div>`; });
+            allMoviesArray.reverse(); renderSlider(allMoviesArray.slice(0, 5)); renderGridWithAds(allMoviesArray, 'movies-grid');
+        });
+    }
+
+    function filterCategory(category, element) {
+        document.querySelectorAll('.cat-pill').forEach(t => t.classList.remove('active-pill')); element.classList.add('active-pill');
+        document.getElementById('grid-title').innerText = category === 'All' ? 'Trending Now' : category + " Movies";
+        renderGridWithAds(category === 'All' ? allMoviesArray : allMoviesArray.filter(m => m.cat === category), 'movies-grid');
+    }
+
+    function renderSlider(movies) {
+        const slider = document.getElementById('top-slider'); slider.innerHTML = '';
+        movies.forEach(m => { slider.innerHTML += `<div class="slider-item" onclick='openPlayer(${JSON.stringify(m).replace(/'/g, "&apos;")})'><img src="${m.banner || m.poster}" class="w-full h-36 object-cover opacity-90"><div class="absolute bottom-0 w-full bg-gradient-to-t from-black to-transparent p-2 text-white font-black text-sm">${m.title}</div></div>`; });
+    }
+
+    function renderGridWithAds(movies, containerId) {
+        const grid = document.getElementById(containerId); grid.innerHTML = '';
+        if(movies.length === 0) return grid.innerHTML = '<div class="col-span-full text-center text-gray-500 text-xs py-4">No content found.</div>';
+        movies.forEach((m, index) => {
+            grid.innerHTML += `<div class="movie-card" onclick='openPlayer(${JSON.stringify(m).replace(/'/g, "&apos;")})'><div class="aspect-[2/3] w-full relative"><img src="${m.poster}" class="w-full h-full object-cover opacity-90"><div class="absolute bottom-0 w-full bg-black/80 text-[9px] text-white p-1 text-center truncate font-semibold">${m.title}</div></div></div>`;
+            if((index + 1) % 6 === 0) grid.innerHTML += `<div class="col-span-3 sm:col-span-4 ad-banner">In-Feed Ad Placement</div>`;
+        });
+    }
+
+    function searchContent() {
+        const query = document.getElementById('search-input').value.toLowerCase();
+        renderGridWithAds(query === '' ? [] : allMoviesArray.filter(m => m.title.toLowerCase().includes(query)), 'search-results');
+    }
+
+    // Player & Ad Flow
+    function openModal(id) { document.getElementById(id).classList.add('active'); }
+    function closeModal(id) { document.getElementById(id).classList.remove('active'); if(id === 'player-modal') document.getElementById('video-frame').src = ''; if(id === 'ad-timer-modal') clearInterval(adInterval); }
+
+    function openPlayer(movie) { currentActiveMovie = movie; document.getElementById('video-frame').src = movie.stream; document.getElementById('play-title').innerText = movie.title; openModal('player-modal'); }
+
+    let adInterval;
+    function startAdTimer() {
+        closeModal('quality-modal'); openModal('ad-timer-modal');
+        let timeLeft = 30; document.getElementById('countdown-timer').innerText = timeLeft;
+        document.getElementById('final-dl-buttons').classList.add('hidden'); document.getElementById('countdown-timer').classList.remove('hidden');
+        adInterval = setInterval(() => { timeLeft--; document.getElementById('countdown-timer').innerText = timeLeft; if(timeLeft <= 0) { clearInterval(adInterval); document.getElementById('countdown-timer').classList.add('hidden'); document.getElementById('final-dl-buttons').classList.remove('hidden'); saveToDownloads(); } }, 1000);
+    }
+    function execute1DM() { if(!currentActiveMovie || !currentActiveMovie.dl) return; window.location.href = `intent://${currentActiveMovie.dl.replace(/^https?:\/\//, '')}#Intent;scheme=${currentActiveMovie.dl.startsWith('https') ? 'https' : 'http'};package=idm.internet.download.manager;S.browser_fallback_url=${encodeURIComponent(currentActiveMovie.dl)};end`; }
+    function executeDirect() { if(currentActiveMovie && currentActiveMovie.dl) window.open(currentActiveMovie.dl, '_blank'); }
+
+    function saveToDownloads() {
+        if(!currentActiveMovie) return; let dls = JSON.parse(localStorage.getItem('novaflix_dls')) || [];
+        if(!dls.some(m => m.title === currentActiveMovie.title)) { dls.unshift(currentActiveMovie); localStorage.setItem('novaflix_dls', JSON.stringify(dls)); loadDownloads(); }
+    }
+    function loadDownloads() { const grid = document.getElementById('downloads-grid'); grid.innerHTML = ''; (JSON.parse(localStorage.getItem('novaflix_dls')) || []).forEach(m => grid.innerHTML += `<div class="movie-card" onclick='openPlayer(${JSON.stringify(m).replace(/'/g, "&apos;")})'><img src="${m.poster}" class="w-full aspect-[2/3] object-cover opacity-90"><div class="p-1"><h3 class="text-[9px] font-bold text-gray-200 truncate">${m.title}</h3></div></div>`); }
+
+    // Admin (5 Clicks)
+    let clickCount = 0; let clickTimer;
+    document.getElementById('brand-logo').addEventListener('click', () => { clickCount++; clearTimeout(clickTimer); if (clickCount === 5) { clickCount = 0; if(auth.currentUser) openModal('admin-dash-modal'); else openModal('admin-login-modal'); } clickTimer = setTimeout(() => { clickCount = 0; }, 2000); });
+    function loginAdmin() { auth.signInWithEmailAndPassword(document.getElementById('admin-email').value, document.getElementById('admin-password').value).then(() => { closeModal('admin-login-modal'); openModal('admin-dash-modal'); }).catch(err => alert(err.message)); }
+    function logoutAdmin() { auth.signOut().then(() => { closeModal('admin-dash-modal'); alert("Signed Out"); }); }
+    function addCategory() { const cat = document.getElementById('new-cat').value; if(cat) { db.ref('categories').push({name: cat}); document.getElementById('new-cat').value = ''; } }
+    function deleteCategory(id) { if(confirm('Delete Category?')) db.ref('categories/' + id).remove(); }
+    function addMovie() { const data = { title: document.getElementById('m-title').value, poster: document.getElementById('m-poster').value, banner: document.getElementById('m-banner').value, cat: document.getElementById('m-cat-select').value, stream: document.getElementById('m-stream').value, dl: document.getElementById('m-dl').value }; if(!data.title || !data.cat) return alert('Title and Category are required!'); db.ref('movies').push(data).then(() => { alert('Published!'); document.querySelectorAll('#admin-dash-modal input').forEach(i=>i.value=''); }); }
+    function deleteMovie(id) { if(confirm('Delete Movie?')) db.ref('movies/' + id).remove(); }
+</script>
+</body>
+</html>
