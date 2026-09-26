@@ -48,7 +48,7 @@
         .slider-item-small { scroll-snap-align: start; flex: 0 0 35%; max-width: 150px; position: relative; border-radius: 4px; overflow: hidden; cursor: pointer; }
         
         .ad-banner { width: 100%; background-color: #1a1d24; color: #666; text-align: center; padding: 15px 0; border: 1px dashed #333; font-size: 11px; border-radius: 4px; }
-        .icon-btn { display: flex; flex-direction: column; items: center; justify-content: center; color: #aaa; gap: 6px; font-size: 14px; cursor: pointer; text-align: center; width: 60px; }
+        .icon-btn { display: flex; flex-direction: column; align-items: center; justify-content: center; color: #aaa; gap: 6px; font-size: 14px; cursor: pointer; text-align: center; width: 60px; }
         .icon-btn:active { transform: scale(0.9); }
         .icon-btn.active-icon { color: #fff; }
         .icon-btn.green-icon { color: #10b981; }
@@ -69,7 +69,8 @@
             <h1 class="text-2xl font-black tracking-widest uppercase"><span class="text-white">NOVA</span><span class="text-[#E50914]">FLIX</span></h1>
         </div>
         <div class="flex gap-4 text-white text-lg items-center">
-            <button id="install-app-btn" class="hidden bg-[#0088cc] text-white text-xs font-bold px-3 py-1.5 rounded animate-pulse" onclick="installPWA()">Install App</button>
+            <!-- PWA INSTALL BUTTON -->
+            <button id="install-app-btn" class="hidden bg-[#0088cc] text-white text-xs font-bold px-3 py-1.5 rounded animate-pulse shadow-[0_0_10px_rgba(0,136,204,0.6)]" onclick="installPWA()">Install App</button>
             <i class="fa-solid fa-magnifying-glass" onclick="switchScreen('screen-search')"></i>
         </div>
     </div>
@@ -101,20 +102,17 @@
         <div id="search-results" class="grid grid-cols-3 sm:grid-cols-4 gap-2"></div>
     </div>
 
-    <!-- 🎬 PRO MOVIE DETAIL SCREEN (LIKE AMAZON/MX) -->
+    <!-- 🎬 PRO MOVIE DETAIL SCREEN -->
     <div id="movie-detail-screen">
-        <!-- Top Nav -->
         <div class="w-full p-3 bg-black/90 flex items-center gap-4 fixed top-0 z-50 shadow-lg">
             <i class="fa-solid fa-chevron-left text-white text-xl cursor-pointer" onclick="closeMovieDetail()"></i>
             <span class="text-gray-300 text-xs font-bold uppercase tracking-wider" id="detail-nav-title">Details</span>
         </div>
         
-        <!-- Video Player -->
         <div class="w-full aspect-video bg-black mt-[48px] relative z-40 shadow-xl">
             <iframe id="video-frame" class="w-full h-full" src="" frameborder="0" allowfullscreen></iframe>
         </div>
         
-        <!-- Movie Info -->
         <div class="p-4 bg-[#0f121a]">
             <div class="flex justify-between items-start gap-4">
                 <div class="flex-1">
@@ -128,15 +126,12 @@
                 <img id="detail-poster" src="" class="w-20 rounded shadow-lg border border-gray-700">
             </div>
 
-            <!-- Watch Button -->
             <button onclick="document.getElementById('video-frame').scrollIntoView({behavior: 'smooth'})" class="w-full bg-amazonBtn text-black font-black text-sm py-3.5 rounded-md mt-5 shadow-lg active:scale-95 flex justify-center items-center gap-2">
                 <i class="fa-solid fa-play text-xs"></i> Watch Now
             </button>
 
-            <!-- Ad 1 -->
             <div class="ad-banner mt-4">In-Stream Ad Placement</div>
 
-            <!-- Action Bar -->
             <div class="flex justify-around items-center mt-4 border-t border-b border-gray-800 py-3">
                 <div class="icon-btn" onclick="toggleLike()" id="btn-like">
                     <i class="fa-solid fa-heart text-lg"></i>
@@ -152,14 +147,26 @@
                 </div>
             </div>
 
-            <!-- Ad 2 -->
             <div class="ad-banner mt-4">Sponsored Ad</div>
 
-            <!-- Recommended Slider -->
             <h2 class="text-sm font-bold text-white mt-6 border-l-2 border-netflixRed pl-2 mb-2">Recommended for You</h2>
             <div class="slider-container hide-scroll" id="recommended-slider"></div>
             
             <div class="h-10"></div>
+        </div>
+    </div>
+
+    <!-- 💰 FULL SCREEN AD MODAL -->
+    <div id="fullscreen-ad-modal" class="modal-overlay" style="background: #000; z-index: 999999;">
+        <div class="w-full h-full flex flex-col justify-center items-center relative">
+            <div class="absolute top-4 right-4 flex gap-2 items-center">
+                <span id="ad-skip-timer" class="bg-black/50 text-white px-3 py-1 rounded text-xs font-bold border border-gray-600">Skip in 15s</span>
+                <button id="ad-skip-btn" onclick="closeFullScreenAd()" class="hidden bg-netflixRed text-white px-3 py-1 rounded text-xs font-bold"><i class="fa-solid fa-xmark mr-1"></i> Close Ad</button>
+            </div>
+            <div class="text-gray-500 mb-4 text-xs font-bold uppercase tracking-widest">Advertisement</div>
+            <div class="w-11/12 max-w-md h-64 bg-[#1a1d24] border border-gray-700 flex justify-center items-center rounded-lg shadow-[0_0_20px_rgba(255,255,255,0.1)]">
+                <p class="text-gray-400 text-sm text-center px-4">Your Full-Screen Video/Display Ad Here</p>
+            </div>
         </div>
     </div>
 
@@ -206,7 +213,6 @@
                 <div class="flex gap-3"><button onclick="logoutAdmin()" class="text-xs bg-gray-800 text-white px-3 py-1.5 rounded">Logout</button><button onclick="closeModal('admin-dash-modal')" class="text-gray-400"><i class="fa-solid fa-xmark"></i></button></div>
             </div>
             <div class="p-3 overflow-y-auto flex-1">
-                
                 <div class="bg-[#1a1d24] p-3 rounded mb-4 border border-gray-800">
                     <h3 class="font-bold text-xs mb-3 text-blue-400">Add New Movie</h3>
                     <div class="grid grid-cols-2 gap-2">
@@ -214,14 +220,10 @@
                         <input type="text" id="m-poster" placeholder="Vertical Poster URL" class="col-span-2 bg-black p-2 rounded text-xs text-white border border-gray-700">
                         <input type="text" id="m-banner" placeholder="Horizontal Banner URL" class="col-span-2 bg-black p-2 rounded text-xs text-white border border-gray-700">
                         <select id="m-cat-select" class="col-span-2 bg-black p-2 rounded text-xs text-gray-400 border border-gray-700"></select>
-                        
-                        <!-- NEW PRO FIELDS -->
                         <input type="text" id="m-lang" placeholder="Language (eg. Hindi, English)" class="col-span-1 bg-black p-2 rounded text-xs text-white border border-gray-700">
                         <input type="text" id="m-quality" placeholder="Quality (eg. 1080p, 4K)" class="col-span-1 bg-black p-2 rounded text-xs text-white border border-gray-700">
-                        
                         <input type="text" id="m-stream" placeholder="Stream Embed URL" class="col-span-2 bg-black p-2 rounded text-xs text-white border border-gray-700">
                         <input type="text" id="m-dl" placeholder="Direct Download Link" class="col-span-2 bg-black p-2 rounded text-xs text-white border border-gray-700">
-                        
                         <div class="col-span-2 flex items-center gap-2 bg-black p-2 rounded border border-gray-700 mt-1">
                             <input type="checkbox" id="m-new" class="w-4 h-4 accent-netflixRed">
                             <label class="text-xs text-white">Mark as NEW Release?</label>
@@ -255,9 +257,35 @@
 </div>
 
 <script>
-    // SECURITY BLOCK (Prevents right click and basic dev tools)
+    // SECURITY BLOCK
     document.addEventListener('contextmenu', event => event.preventDefault());
     document.onkeydown = function(e) { if(e.keyCode == 123 || (e.ctrlKey && e.shiftKey && (e.keyCode == 73 || e.keyCode == 74)) || (e.ctrlKey && e.keyCode == 85)) return false; };
+
+    // PWA INSTALL LOGIC (Fixed)
+    if ('serviceWorker' in navigator) { 
+        window.addEventListener('load', () => { 
+            navigator.serviceWorker.register('./sw.js').catch(err => console.log('SW setup error', err)); 
+        }); 
+    }
+    
+    let deferredPrompt;
+    window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault(); 
+        deferredPrompt = e;
+        document.getElementById('install-app-btn').classList.remove('hidden'); 
+    });
+    
+    function installPWA() {
+        if (deferredPrompt) {
+            deferredPrompt.prompt();
+            deferredPrompt.userChoice.then((choiceResult) => {
+                if (choiceResult.outcome === 'accepted') { 
+                    document.getElementById('install-app-btn').classList.add('hidden'); 
+                }
+                deferredPrompt = null;
+            });
+        }
+    }
 
     // FIREBASE CONFIG
     const firebaseConfig = {
@@ -274,12 +302,21 @@
     const db = firebase.database();
     const auth = firebase.auth();
 
-    window.onload = () => { loadData(); loadDownloads(); };
+    window.onload = () => { 
+        loadData(); loadDownloads(); 
+        // App Open Ad Logic (Shows only once per session after 3 seconds)
+        if (!sessionStorage.getItem('novaflix_open_ad_shown')) {
+            setTimeout(() => {
+                showFullScreenAd(() => { console.log("Welcome to NovaFlix"); });
+                sessionStorage.setItem('novaflix_open_ad_shown', 'true');
+            }, 3000); 
+        }
+    };
 
     let allMoviesArray = []; let currentActiveMovie = null;
 
     function switchScreen(screenId, navElement = null) {
-        closeMovieDetail(); // Close player if open
+        closeMovieDetail();
         document.querySelectorAll('.app-screen').forEach(el => el.classList.remove('active'));
         document.getElementById(screenId).classList.add('active');
         if(navElement) {
@@ -339,35 +376,56 @@
     function openModal(id) { document.getElementById(id).classList.add('active'); }
     function closeModal(id) { document.getElementById(id).classList.remove('active'); if(id === 'ad-timer-modal') clearInterval(adInterval); }
 
-    // 🔥 PRO MOVIE DETAIL FLOW
+    // FULL SCREEN AD SYSTEM
+    let adCallback = null;
+    let fullScreenAdTimer;
+
+    function showFullScreenAd(callback) {
+        adCallback = callback;
+        document.getElementById('fullscreen-ad-modal').classList.add('active');
+        document.getElementById('ad-skip-btn').classList.add('hidden');
+        document.getElementById('ad-skip-timer').classList.remove('hidden');
+        
+        let timeLeft = 15; 
+        document.getElementById('ad-skip-timer').innerText = `Skip in ${timeLeft}s`;
+
+        fullScreenAdTimer = setInterval(() => {
+            timeLeft--;
+            document.getElementById('ad-skip-timer').innerText = `Skip in ${timeLeft}s`;
+            if (timeLeft <= 0) {
+                clearInterval(fullScreenAdTimer);
+                document.getElementById('ad-skip-timer').classList.add('hidden');
+                document.getElementById('ad-skip-btn').classList.remove('hidden');
+            }
+        }, 1000);
+    }
+
+    function closeFullScreenAd() {
+        clearInterval(fullScreenAdTimer);
+        document.getElementById('fullscreen-ad-modal').classList.remove('active');
+        if (adCallback) { adCallback(); adCallback = null; }
+    }
+
+    // PRO MOVIE DETAIL FLOW
     function openMovieDetail(movie) { 
         currentActiveMovie = movie; 
-        
-        // Setup Video & Data
         document.getElementById('video-frame').src = movie.stream; 
         document.getElementById('detail-title').innerText = movie.title; 
         document.getElementById('detail-poster').src = movie.poster; 
         document.getElementById('detail-lang').innerText = movie.language || 'Hindi / English'; 
         document.getElementById('detail-cat').innerText = movie.cat; 
         document.getElementById('detail-quality').innerText = movie.quality || '1080p, 720p HD'; 
-
-        // Update Action Bar UI
-        checkLikeStatus();
-        checkDownloadStatus();
-
-        // Populate Recommended
+        
+        checkLikeStatus(); checkDownloadStatus();
         populateRecommended(movie.cat, movie.id);
-
-        // Show Full Screen
         document.getElementById('movie-detail-screen').classList.add('active');
     }
 
     function closeMovieDetail() {
         document.getElementById('movie-detail-screen').classList.remove('active');
-        document.getElementById('video-frame').src = ''; // Stop video
+        document.getElementById('video-frame').src = ''; 
     }
 
-    // ACTION BAR LOGIC
     function checkLikeStatus() {
         let likes = JSON.parse(localStorage.getItem('novaflix_likes')) || [];
         let btn = document.getElementById('btn-like');
@@ -378,17 +436,13 @@
     function toggleLike() {
         let likes = JSON.parse(localStorage.getItem('novaflix_likes')) || [];
         let index = likes.indexOf(currentActiveMovie.id);
-        if(index > -1) { likes.splice(index, 1); } 
-        else { likes.push(currentActiveMovie.id); }
-        localStorage.setItem('novaflix_likes', JSON.stringify(likes));
-        checkLikeStatus();
+        if(index > -1) { likes.splice(index, 1); } else { likes.push(currentActiveMovie.id); }
+        localStorage.setItem('novaflix_likes', JSON.stringify(likes)); checkLikeStatus();
     }
 
     function checkDownloadStatus() {
         let dls = JSON.parse(localStorage.getItem('novaflix_dls')) || [];
         let btn = document.getElementById('btn-download');
-        let text = document.getElementById('dl-text');
-        
         if(dls.some(m => m.title === currentActiveMovie.title)) {
             btn.classList.add('green-icon'); btn.innerHTML = `<i class="fa-solid fa-circle-check text-lg"></i><span class="text-[9px] font-bold">Downloaded</span>`;
         } else {
@@ -398,33 +452,21 @@
 
     function triggerDownload() {
         let dls = JSON.parse(localStorage.getItem('novaflix_dls')) || [];
-        if(dls.some(m => m.title === currentActiveMovie.title)) {
-            alert("Ye movie pehle se downloaded hai! Niche 'Downloads' tab mein check karein."); return;
-        }
-        openModal('quality-modal');
+        if(dls.some(m => m.title === currentActiveMovie.title)) { return alert("Movie is already downloaded! Check Downloads section."); }
+        showFullScreenAd(() => { openModal('quality-modal'); });
     }
 
-    // SMART SHARE APP LINK
     function shareApp() {
         if (navigator.share) {
-            navigator.share({
-                title: 'NovaFlix Premium',
-                text: `Dekho "${currentActiveMovie.title}" NovaFlix par bilkul free! Abhi app download karo aur dekho:`,
-                url: 'https://indiainformant2026-bot.github.io/-Nova-flix-/'
-            }).catch(console.error);
-        } else {
-            alert("App Link Copied: https://indiainformant2026-bot.github.io/-Nova-flix-/");
-        }
+            navigator.share({ title: 'NovaFlix Premium', text: `Dekho "${currentActiveMovie.title}" NovaFlix par! Abhi app download karo:`, url: 'https://nova-flix-one.vercel.app/' }).catch(console.error);
+        } else { alert("App Link Copied: https://nova-flix-one.vercel.app/"); }
     }
 
     function populateRecommended(category, excludeId) {
         let recMovies = allMoviesArray.filter(m => m.cat === category && m.id !== excludeId);
-        if(recMovies.length === 0) recMovies = allMoviesArray.filter(m => m.id !== excludeId).slice(0, 5); // Fallback
-        
+        if(recMovies.length === 0) recMovies = allMoviesArray.filter(m => m.id !== excludeId).slice(0, 5); 
         const slider = document.getElementById('recommended-slider'); slider.innerHTML = '';
-        recMovies.forEach(m => {
-            slider.innerHTML += `<div class="slider-item-small" onclick='openMovieDetail(${JSON.stringify(m).replace(/'/g, "&apos;")})'><img src="${m.poster}" class="w-full aspect-[2/3] object-cover opacity-90"><div class="absolute bottom-0 w-full bg-black/80 text-[9px] text-white p-1 text-center truncate">${m.title}</div></div>`;
-        });
+        recMovies.forEach(m => { slider.innerHTML += `<div class="slider-item-small" onclick='openMovieDetail(${JSON.stringify(m).replace(/'/g, "&apos;")})'><img src="${m.poster}" class="w-full aspect-[2/3] object-cover opacity-90"><div class="absolute bottom-0 w-full bg-black/80 text-[9px] text-white p-1 text-center truncate">${m.title}</div></div>`; });
     }
 
     // AD TIMER & DOWNLOAD EXECUTION
@@ -435,10 +477,7 @@
         document.getElementById('final-dl-buttons').classList.add('hidden'); document.getElementById('countdown-timer').classList.remove('hidden');
         adInterval = setInterval(() => { 
             timeLeft--; document.getElementById('countdown-timer').innerText = timeLeft; 
-            if(timeLeft <= 0) { 
-                clearInterval(adInterval); document.getElementById('countdown-timer').classList.add('hidden'); 
-                document.getElementById('final-dl-buttons').classList.remove('hidden'); saveToDownloads(); 
-            } 
+            if(timeLeft <= 0) { clearInterval(adInterval); document.getElementById('countdown-timer').classList.add('hidden'); document.getElementById('final-dl-buttons').classList.remove('hidden'); saveToDownloads(); } 
         }, 1000);
     }
     
@@ -447,20 +486,14 @@
 
     function saveToDownloads() {
         if(!currentActiveMovie) return; let dls = JSON.parse(localStorage.getItem('novaflix_dls')) || [];
-        if(!dls.some(m => m.title === currentActiveMovie.title)) { 
-            dls.unshift(currentActiveMovie); localStorage.setItem('novaflix_dls', JSON.stringify(dls)); 
-            loadDownloads(); checkDownloadStatus(); 
-        }
+        if(!dls.some(m => m.title === currentActiveMovie.title)) { dls.unshift(currentActiveMovie); localStorage.setItem('novaflix_dls', JSON.stringify(dls)); loadDownloads(); checkDownloadStatus(); }
     }
     
     function loadDownloads() { 
         const grid = document.getElementById('downloads-grid'); grid.innerHTML = ''; 
         let dls = JSON.parse(localStorage.getItem('novaflix_dls')) || [];
         if(dls.length === 0) return grid.innerHTML = '<div class="col-span-full text-center text-gray-500 text-xs py-4">No downloaded movies yet.</div>';
-        
-        dls.forEach((m, i) => {
-            grid.innerHTML += `<div class="movie-card"><div class="absolute top-1 right-1 bg-black/80 rounded-full w-6 h-6 flex justify-center items-center z-20 shadow cursor-pointer text-red-500" onclick="removeDownload(${i})"><i class="fa-solid fa-trash text-[10px]"></i></div><img src="${m.poster}" class="w-full aspect-[2/3] object-cover opacity-90" onclick='openMovieDetail(${JSON.stringify(m).replace(/'/g, "&apos;")})'><div class="absolute bottom-0 w-full bg-black/80 text-[9px] text-white p-1 text-center truncate font-semibold">${m.title}</div></div>`;
-        });
+        dls.forEach((m, i) => { grid.innerHTML += `<div class="movie-card"><div class="absolute top-1 right-1 bg-black/80 rounded-full w-6 h-6 flex justify-center items-center z-20 shadow cursor-pointer text-red-500" onclick="removeDownload(${i})"><i class="fa-solid fa-trash text-[10px]"></i></div><img src="${m.poster}" class="w-full aspect-[2/3] object-cover opacity-90" onclick='openMovieDetail(${JSON.stringify(m).replace(/'/g, "&apos;")})'><div class="absolute bottom-0 w-full bg-black/80 text-[9px] text-white p-1 text-center truncate font-semibold">${m.title}</div></div>`; });
     }
 
     function removeDownload(index) {
@@ -482,22 +515,10 @@
     
     function addMovie() { 
         const data = { 
-            title: document.getElementById('m-title').value, 
-            poster: document.getElementById('m-poster').value, 
-            banner: document.getElementById('m-banner').value, 
-            cat: document.getElementById('m-cat-select').value, 
-            language: document.getElementById('m-lang').value || 'Hindi',
-            quality: document.getElementById('m-quality').value || '1080p HD',
-            stream: document.getElementById('m-stream').value, 
-            dl: document.getElementById('m-dl').value,
-            isNew: document.getElementById('m-new').checked
+            title: document.getElementById('m-title').value, poster: document.getElementById('m-poster').value, banner: document.getElementById('m-banner').value, cat: document.getElementById('m-cat-select').value, language: document.getElementById('m-lang').value || 'Hindi', quality: document.getElementById('m-quality').value || '1080p HD', stream: document.getElementById('m-stream').value, dl: document.getElementById('m-dl').value, isNew: document.getElementById('m-new').checked
         }; 
         if(!data.title || !data.cat || !data.stream) return alert('Title, Category & Stream URL are required!'); 
-        db.ref('movies').push(data).then(() => { 
-            alert('Movie Published Successfully!'); 
-            document.querySelectorAll('#admin-dash-modal input[type="text"]').forEach(i=>i.value='');
-            document.getElementById('m-new').checked = false;
-        }); 
+        db.ref('movies').push(data).then(() => { alert('Movie Published!'); document.querySelectorAll('#admin-dash-modal input[type="text"]').forEach(i=>i.value=''); document.getElementById('m-new').checked = false; }); 
     }
     function deleteMovie(id) { if(confirm('Delete Movie?')) db.ref('movies/' + id).remove(); }
 </script>
