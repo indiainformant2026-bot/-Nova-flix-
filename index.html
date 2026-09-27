@@ -102,7 +102,6 @@
         
         <div class="slider-container hide-scroll px-3 w-full" id="top-slider"></div>
 
-        <!-- Install Banner hamesha dikhega -->
         <div id="install-banner" class="mx-3 mt-2 mb-4 p-4 bg-gradient-to-r from-blue-900 to-blue-950 rounded-lg border border-blue-800 shadow-lg flex justify-between items-center relative overflow-hidden">
             <div class="absolute -right-4 -top-4 w-20 h-20 bg-blue-500 rounded-full blur-3xl opacity-20"></div>
             <div>
@@ -542,7 +541,7 @@
     }
     function removeDownload(index) { if(confirm("Delete this history log?")) { let dls = JSON.parse(localStorage.getItem('novaflix_dls')) || []; dls.splice(index, 1); localStorage.setItem('novaflix_dls', JSON.stringify(dls)); loadDownloads(); } }
 
-    function submitRequest() { const name = document.getElementById('req-movie-name').value; if(!name) return alert("Please enter a movie name"); db.ref('requests').push({ name: name, date: new Date().toISOString() }).then(() => { alert("Request successfully submitted!"); document.getElementById('req-movie-name').value = ''; closeModal('request-modal'); }); }
+    function submitRequest() { const name = document.getElementById('req-movie-name').value; if(!name) return alert("Please enter a movie name"); db.ref('requests').push({ name: name, date: new Date().toISOString() }).then(() => { alert("Request submitted successfully!"); document.getElementById('req-movie-name').value = ''; closeModal('request-modal'); }); }
     function deleteRequest(id) { if(confirm('Mark as done & delete?')) db.ref('requests/' + id).remove(); }
 
     let clickCount = 0; let clickTimer;
@@ -653,7 +652,7 @@
         document.getElementById('save-movie-btn').innerText = "Publish Content";
     }
     
-    def deleteMovie(id) { if(confirm('Delete this Content?')) db.ref('movies/' + id).remove(); }
+    function deleteMovie(id) { if(confirm('Delete this Content?')) db.ref('movies/' + id).remove(); }
 </script>
 </body>
 </html>
