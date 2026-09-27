@@ -345,7 +345,6 @@
         deferredPrompt = e;
     });
     
-    // Naya PWA Install Function - Bina Alert Box Ke!
     function installPWA() {
         if (deferredPrompt) {
             deferredPrompt.prompt();
@@ -356,7 +355,6 @@
                 deferredPrompt = null;
             });
         }
-        // Faltu ka alert yahan se hata diya gaya hai.
     }
 
     const firebaseConfig = {
