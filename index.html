@@ -345,6 +345,7 @@
         deferredPrompt = e;
     });
     
+    // Naya PWA Install Function - Bina Alert Box Ke!
     function installPWA() {
         if (deferredPrompt) {
             deferredPrompt.prompt();
@@ -354,9 +355,8 @@
                 }
                 deferredPrompt = null;
             });
-        } else {
-            alert("App install ke liye apne browser ke upar diye gaye 3 dots (...) par click karein aur 'Install app' ya 'Add to Home screen' select karein!");
         }
+        // Faltu ka alert yahan se hata diya gaya hai.
     }
 
     const firebaseConfig = {
