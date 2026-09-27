@@ -1,6 +1,26 @@
-self.addEventListener('install', (e) => {
-    e.waitUntil(caches.open('novaflix-store').then((cache) => cache.addAll(['./index.html', './manifest.json'])));
+const CACHE_NAME = 'novaflix-cache-v1';
+const urlsToCache = [
+  './',
+  './index.html',
+  './manifest.json'
+];
+
+// Install Service Worker
+self.addEventListener('install', event => {
+  event.waitUntil(
+    caches.open(CACHE_NAME)
+      .then(cache => {
+        return cache.addAll(urlsToCache);
+      })
+  );
 });
-self.addEventListener('fetch', (e) => {
-    e.respondWith(caches.match(e.request).then((response) => response || fetch(e.request)));
+
+// Fetch (Browser ko lagta hai app offline bhi chal sakti hai, isliye install prompt deta hai)
+self.addEventListener('fetch', event => {
+  event.respondWith(
+    caches.match(event.request)
+      .then(response => {
+        return response || fetch(event.request);
+      })
+  );
 });
