@@ -23,21 +23,18 @@
     </script>
     
     <style>
-        /* STRICT NATIVE APP FEEL & PULL-TO-REFRESH PREVENTION */
         html, body { 
             margin: 0; padding: 0; width: 100%; height: 100%;
             background-color: #0f121a; color: #fff; 
             font-family: 'Segoe UI', sans-serif; 
             user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; 
-            overflow: hidden; /* Stops native browser pull-to-refresh */
+            overflow: hidden; 
         }
         
         #main-app-wrapper {
             width: 100%; height: 100%;
-            overflow-y: auto;
-            overflow-x: hidden;
-            overscroll-behavior-y: contain; /* CRITICAL: Stops pull-to-refresh inside app */
-            padding-bottom: 70px; /* Space for bottom nav */
+            overflow-y: auto; overflow-x: hidden; overscroll-behavior-y: contain; 
+            padding-bottom: 70px; 
         }
 
         .hide-scroll::-webkit-scrollbar { display: none; }
@@ -45,11 +42,9 @@
         .app-screen.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         
-        /* MODALS */
         .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 99999; justify-content: center; align-items: center; padding: 15px; }
         .modal-overlay.active { display: flex; animation: fadeIn 0.2s; }
         
-        /* FULL PAGE MOVIE DETAIL SCREEN */
         #movie-detail-screen { display: none; position: fixed; inset: 0; background: #0f121a; z-index: 99990; overflow-y: auto; overscroll-behavior-y: contain; flex-direction: column; padding-bottom: 30px; }
         #movie-detail-screen.active { display: flex; animation: slideUp 0.3s forwards; }
         @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
@@ -58,7 +53,6 @@
         .cat-pill.active-pill { background: #E50914; color: #fff; border-color: #E50914; box-shadow: 0 0 10px rgba(229,9,20,0.4); }
         .movie-card { border-radius: 6px; overflow: hidden; position: relative; cursor: pointer; background: #1f1f1f; box-shadow: 0 4px 6px rgba(0,0,0,0.5); width: 100%; }
         
-        /* SLIDER ADJUSTMENTS FOR MOBILE 100% WIDTH */
         .slider-container { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; scroll-behavior: smooth; gap: 10px; padding: 10px 0; }
         .slider-item { scroll-snap-align: center; flex: 0 0 100%; max-width: 100%; position: relative; border-radius: 8px; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.5); }
         .slider-item-small { scroll-snap-align: start; flex: 0 0 40%; max-width: 150px; position: relative; border-radius: 4px; overflow: hidden; cursor: pointer; }
@@ -74,7 +68,6 @@
 </head>
 <body oncontextmenu="return false;">
 
-<!-- SCROLLABLE APP CONTAINER (Prevents Pull-to-Refresh) -->
 <div id="main-app-wrapper" class="relative">
     
     <!-- HEADER -->
@@ -85,8 +78,11 @@
             </div>
             <h1 class="text-xl sm:text-2xl font-black tracking-widest uppercase"><span class="text-white">NOVA</span><span class="text-[#E50914]">FLIX</span></h1>
         </div>
-        <div class="flex gap-4 text-white text-lg items-center">
-            <button id="install-app-btn" class="hidden bg-[#0088cc] text-white text-xs font-bold px-3 py-1.5 rounded animate-pulse shadow-[0_0_10px_rgba(0,136,204,0.6)]" onclick="installPWA()">Install App</button>
+        <div class="flex gap-3 text-white text-lg items-center">
+            <!-- NAYA INSTALL BUTTON -->
+            <button id="install-app-btn" class="hidden bg-gradient-to-r from-[#10b981] to-[#047857] text-white text-[10px] sm:text-xs font-bold px-3 py-1.5 rounded-full animate-pulse shadow-[0_0_10px_rgba(16,185,129,0.5)] flex items-center gap-1.5 active:scale-95 transition-transform" onclick="installPWA()">
+                <i class="fa-solid fa-download"></i> Install
+            </button>
             <i class="fa-solid fa-magnifying-glass cursor-pointer p-1" onclick="switchScreen('screen-search')"></i>
         </div>
     </div>
@@ -96,10 +92,21 @@
         <div id="category-tabs" class="flex space-x-3 overflow-x-auto hide-scroll px-3 py-3 bg-[#0a0c10] sticky top-[52px] z-40 border-b border-gray-800 w-full">
             <span class="cat-pill active-pill" onclick="filterCategory('All', this)">All Movies</span>
         </div>
+        
         <div class="slider-container hide-scroll px-3 w-full" id="top-slider"></div>
+
+        <!-- NAYA INSTALL BANNER (Will only show if app is not installed) -->
+        <div id="install-banner" class="hidden mx-3 mt-2 mb-4 p-4 bg-gradient-to-r from-blue-900 to-blue-950 rounded-lg border border-blue-800 shadow-lg flex justify-between items-center relative overflow-hidden">
+            <div class="absolute -right-4 -top-4 w-20 h-20 bg-blue-500 rounded-full blur-3xl opacity-20"></div>
+            <div>
+                <h3 class="text-white font-bold text-sm">Get NovaFlix App</h3>
+                <p class="text-gray-300 text-[10px] mt-0.5">One-click movies & fast streaming!</p>
+            </div>
+            <button onclick="installPWA()" class="bg-white text-blue-900 font-bold px-4 py-2 rounded-full text-xs shadow-md active:scale-95 z-10"><i class="fa-solid fa-download mr-1"></i> Install</button>
+        </div>
+
         <div class="p-3 w-full">
             <h2 class="text-sm font-bold text-white mb-3 border-l-2 border-netflixRed pl-2" id="grid-title">Trending Now</h2>
-            <!-- Auto-adjusting Grid: 3 columns on mobile, 4 on tablet, 6 on PC -->
             <div class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-2 w-full" id="movies-grid"></div>
         </div>
     </div>
@@ -118,8 +125,7 @@
         </div>
         <div id="search-results" class="grid grid-cols-3 sm:grid-cols-4 gap-2 w-full"></div>
     </div>
-
-</div> <!-- END main-app-wrapper -->
+</div> 
 
 <!-- 🎬 PRO MOVIE DETAIL SCREEN -->
 <div id="movie-detail-screen">
@@ -253,7 +259,7 @@
                     <select id="m-cat-select" class="sm:col-span-2 bg-black p-2 rounded text-xs text-gray-400 border border-gray-700 w-full"></select>
                     <input type="text" id="m-lang" placeholder="Language" class="bg-black p-2 rounded text-xs text-white border border-gray-700">
                     <input type="text" id="m-quality" placeholder="Quality" class="bg-black p-2 rounded text-xs text-white border border-gray-700">
-                    <input type="text" id="m-stream" placeholder="Stream Embed URL" class="sm:col-span-2 bg-black p-2 rounded text-xs text-white border border-gray-700">
+                    <input type="text" id="m-stream" placeholder="Stream URL (YouTube ka koi bhi link dalen)" class="sm:col-span-2 bg-black p-2 rounded text-xs text-white border border-gray-700 border-l-2 border-l-netflixRed">
                     <input type="text" id="m-dl" placeholder="Direct Download Link" class="sm:col-span-2 bg-black p-2 rounded text-xs text-white border border-gray-700">
                     <div class="sm:col-span-2 flex items-center gap-2 bg-black p-2 rounded border border-gray-700 mt-1">
                         <input type="checkbox" id="m-new" class="w-4 h-4 accent-netflixRed">
@@ -294,7 +300,6 @@
 </div>
 
 <script>
-    // SECURITY BLOCK
     document.addEventListener('contextmenu', event => event.preventDefault());
     document.onkeydown = function(e) { if(e.keyCode == 123 || (e.ctrlKey && e.shiftKey && (e.keyCode == 73 || e.keyCode == 74)) || (e.ctrlKey && e.keyCode == 85)) return false; };
 
@@ -308,20 +313,27 @@
     window.addEventListener('beforeinstallprompt', (e) => {
         e.preventDefault(); 
         deferredPrompt = e;
-        document.getElementById('install-app-btn').classList.remove('hidden'); 
+        const btn = document.getElementById('install-app-btn');
+        const banner = document.getElementById('install-banner');
+        if(btn) btn.classList.remove('hidden'); 
+        if(banner) banner.classList.remove('hidden');
     });
     
     function installPWA() {
         if (deferredPrompt) {
             deferredPrompt.prompt();
             deferredPrompt.userChoice.then((choiceResult) => {
-                if (choiceResult.outcome === 'accepted') { document.getElementById('install-app-btn').classList.add('hidden'); }
+                if (choiceResult.outcome === 'accepted') { 
+                    const btn = document.getElementById('install-app-btn');
+                    const banner = document.getElementById('install-banner');
+                    if(btn) btn.classList.add('hidden'); 
+                    if(banner) banner.classList.add('hidden');
+                }
                 deferredPrompt = null;
             });
         }
     }
 
-    // FIREBASE CONFIG
     const firebaseConfig = {
       apiKey: "AIzaSyCOXI8ZjMyHj3dJlLhmXga6Vzic8-yV7PA",
       authDomain: "nova-flix-5a384.firebaseapp.com",
@@ -422,12 +434,10 @@
         renderGridWithAds(query === '' ? [] : allMoviesArray.filter(m => m.title.toLowerCase().includes(query)), 'search-results');
     }
 
-    // MODALS
     function openModal(id) { document.getElementById(id).classList.add('active'); }
     function closeModal(id) { document.getElementById(id).classList.remove('active'); if(id === 'ad-timer-modal') clearInterval(adInterval); }
     function openRequestModal() { openModal('request-modal'); }
 
-    // FULL SCREEN AD
     let adCallback = null; let fullScreenAdTimer;
     function showFullScreenAd(callback) {
         adCallback = callback; document.getElementById('fullscreen-ad-modal').classList.add('active');
@@ -440,7 +450,6 @@
     }
     function closeFullScreenAd() { clearInterval(fullScreenAdTimer); document.getElementById('fullscreen-ad-modal').classList.remove('active'); if (adCallback) { adCallback(); adCallback = null; } }
 
-    // MOVIE DETAIL
     function openMovieDetail(movie) { 
         currentActiveMovie = movie; document.getElementById('video-frame').src = movie.stream; 
         document.getElementById('detail-title').innerText = movie.title; document.getElementById('detail-poster').src = movie.poster; 
@@ -476,7 +485,6 @@
         recMovies.forEach(m => { slider.innerHTML += `<div class="slider-item-small" onclick='openMovieDetail(${JSON.stringify(m).replace(/'/g, "&apos;")})'><img src="${m.poster}" class="w-full aspect-[2/3] object-cover opacity-90"><div class="absolute bottom-0 w-full bg-black/80 text-[9px] text-white p-1 text-center truncate">${m.title}</div></div>`; });
     }
 
-    // DOWNLOAD EXECUTION
     let adInterval;
     function startAdTimer() {
         closeModal('quality-modal'); openModal('ad-timer-modal');
@@ -502,7 +510,6 @@
         if(confirm("Delete this history log?")) { let dls = JSON.parse(localStorage.getItem('novaflix_dls')) || []; dls.splice(index, 1); localStorage.setItem('novaflix_dls', JSON.stringify(dls)); loadDownloads(); }
     }
 
-    // USER REQUESTS
     function submitRequest() {
         const name = document.getElementById('req-movie-name').value;
         if(!name) return alert("Please enter a movie name");
@@ -510,7 +517,6 @@
     }
     function deleteRequest(id) { if(confirm('Mark as done & delete?')) db.ref('requests/' + id).remove(); }
 
-    // ADMIN 
     let clickCount = 0; let clickTimer;
     document.getElementById('brand-logo').addEventListener('click', () => { clickCount++; clearTimeout(clickTimer); if (clickCount === 5) { clickCount = 0; if(auth.currentUser) openModal('admin-dash-modal'); else openModal('admin-login-modal'); } clickTimer = setTimeout(() => { clickCount = 0; }, 2000); });
     function loginAdmin() { auth.signInWithEmailAndPassword(document.getElementById('admin-email').value, document.getElementById('admin-password').value).then(() => { closeModal('admin-login-modal'); openModal('admin-dash-modal'); document.getElementById('admin-email').value=''; document.getElementById('admin-password').value=''; }).catch(err => alert(err.message)); }
@@ -527,9 +533,29 @@
             document.getElementById('m-new').checked = m.isNew || false; document.getElementById('save-movie-btn').innerText = "Update Movie";
         }
     }
+
+    // YOUTUBE AUTO-CONVERT FUNCTION
+    function formatStreamURL(url) {
+        if (!url) return '';
+        let videoId = '';
+        if (url.includes('youtu.be/')) { videoId = url.split('youtu.be/')[1].split('?')[0]; } 
+        else if (url.includes('youtube.com/watch')) { videoId = new URLSearchParams(new URL(url).search).get('v'); }
+        else if (url.includes('youtube.com/shorts/')) { videoId = url.split('youtube.com/shorts/')[1].split('?')[0]; }
+        
+        if (videoId) return `https://www.youtube.com/embed/${videoId}`;
+        return url; 
+    }
+
     function saveMovie() { 
         const id = document.getElementById('m-id').value;
-        const data = { title: document.getElementById('m-title').value, poster: document.getElementById('m-poster').value, banner: document.getElementById('m-banner').value, cat: document.getElementById('m-cat-select').value, language: document.getElementById('m-lang').value || 'Hindi', quality: document.getElementById('m-quality').value || '1080p HD', stream: document.getElementById('m-stream').value, dl: document.getElementById('m-dl').value, isNew: document.getElementById('m-new').checked }; 
+        const rawStreamUrl = document.getElementById('m-stream').value;
+        const finalStreamUrl = formatStreamURL(rawStreamUrl); // Link yahan auto convert hoga
+        
+        const data = { 
+            title: document.getElementById('m-title').value, poster: document.getElementById('m-poster').value, banner: document.getElementById('m-banner').value, 
+            cat: document.getElementById('m-cat-select').value, language: document.getElementById('m-lang').value || 'Hindi', quality: document.getElementById('m-quality').value || '1080p HD', 
+            stream: finalStreamUrl, dl: document.getElementById('m-dl').value, isNew: document.getElementById('m-new').checked 
+        }; 
         if(!data.title || !data.cat || !data.stream) return alert('Title, Category & Stream URL are required!'); 
         if(id) { db.ref('movies/' + id).update(data).then(() => { alert('Movie Updated!'); resetAdminForm(); }); } else { db.ref('movies').push(data).then(() => { alert('Movie Published!'); resetAdminForm(); }); }
     }
