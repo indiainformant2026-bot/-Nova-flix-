@@ -43,8 +43,10 @@
         .cat-pill { padding: 6px 16px; border-radius: 20px; background: #1a1d24; border: 1px solid #333; font-size: 11px; font-weight: bold; color: #aaa; cursor: pointer; white-space: nowrap; }
         .cat-pill.active-pill { background: #E50914; color: #fff; border-color: #E50914; box-shadow: 0 0 10px rgba(229,9,20,0.4); }
         .movie-card { border-radius: 4px; overflow: hidden; position: relative; cursor: pointer; background: #1f1f1f; box-shadow: 0 4px 6px rgba(0,0,0,0.5); }
+        
+        /* SLIDER ADJUSTMENTS FOR 100% WIDTH */
         .slider-container { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; scroll-behavior: smooth; gap: 10px; padding: 10px 0; }
-        .slider-item { scroll-snap-align: start; flex: 0 0 80%; max-width: 300px; position: relative; border-radius: 8px; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.5); }
+        .slider-item { scroll-snap-align: center; flex: 0 0 100%; max-width: 100%; position: relative; border-radius: 8px; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.5); }
         .slider-item-small { scroll-snap-align: start; flex: 0 0 35%; max-width: 150px; position: relative; border-radius: 4px; overflow: hidden; cursor: pointer; }
         
         .ad-banner { width: 100%; background-color: #1a1d24; color: #666; text-align: center; padding: 15px 0; border: 1px dashed #333; font-size: 11px; border-radius: 4px; }
@@ -89,7 +91,7 @@
 
     <!-- ⬇️ DOWNLOADS -->
     <div id="screen-downloads" class="app-screen p-3">
-        <h2 class="text-lg font-bold text-white mb-2 border-l-2 border-blue-500 pl-2">My Downloads</h2>
+        <h2 class="text-lg font-bold text-white mb-2 border-l-2 border-blue-500 pl-2">My Downloads History</h2>
         <div class="grid grid-cols-3 sm:grid-cols-4 gap-2" id="downloads-grid"></div>
     </div>
 
@@ -170,6 +172,16 @@
         </div>
     </div>
 
+    <!-- 📝 REQUEST MOVIE MODAL -->
+    <div id="request-modal" class="modal-overlay">
+        <div class="bg-[#14161c] p-6 rounded w-full max-w-sm border border-gray-800 relative shadow-2xl">
+            <button onclick="closeModal('request-modal')" class="absolute top-2 right-2 text-gray-400"><i class="fa-solid fa-xmark"></i></button>
+            <h2 class="text-xl font-bold text-white mb-4 text-center">Request a Movie</h2>
+            <input type="text" id="req-movie-name" placeholder="Enter Movie Name" class="w-full bg-black p-3 rounded mb-3 text-sm text-white border border-gray-700">
+            <button onclick="submitRequest()" class="w-full bg-netflixRed text-white font-bold py-3 rounded text-sm">Submit Request</button>
+        </div>
+    </div>
+
     <!-- ⚙️ DOWNLOAD FLOW MODALS -->
     <div id="quality-modal" class="modal-overlay">
         <div class="bg-[#1a1d24] p-4 rounded w-full max-w-sm text-center border border-gray-700">
@@ -214,11 +226,12 @@
             </div>
             <div class="p-3 overflow-y-auto flex-1">
                 <div class="bg-[#1a1d24] p-3 rounded mb-4 border border-gray-800">
-                    <h3 class="font-bold text-xs mb-3 text-blue-400">Add New Movie</h3>
+                    <h3 class="font-bold text-xs mb-3 text-blue-400">Add / Edit Movie</h3>
+                    <input type="hidden" id="m-id">
                     <div class="grid grid-cols-2 gap-2">
                         <input type="text" id="m-title" placeholder="Movie Title" class="col-span-2 bg-black p-2 rounded text-xs text-white border border-gray-700">
-                        <input type="text" id="m-poster" placeholder="Vertical Poster URL" class="col-span-2 bg-black p-2 rounded text-xs text-white border border-gray-700">
-                        <input type="text" id="m-banner" placeholder="Horizontal Banner URL" class="col-span-2 bg-black p-2 rounded text-xs text-white border border-gray-700">
+                        <input type="text" id="m-poster" placeholder="Vertical Poster URL (Grid ke liye)" class="col-span-2 bg-black p-2 rounded text-xs text-white border border-gray-700">
+                        <input type="text" id="m-banner" placeholder="Horizontal Banner URL (Slider ke liye)" class="col-span-2 bg-black p-2 rounded text-xs text-white border border-gray-700">
                         <select id="m-cat-select" class="col-span-2 bg-black p-2 rounded text-xs text-gray-400 border border-gray-700"></select>
                         <input type="text" id="m-lang" placeholder="Language (eg. Hindi, English)" class="col-span-1 bg-black p-2 rounded text-xs text-white border border-gray-700">
                         <input type="text" id="m-quality" placeholder="Quality (eg. 1080p, 4K)" class="col-span-1 bg-black p-2 rounded text-xs text-white border border-gray-700">
@@ -228,7 +241,8 @@
                             <input type="checkbox" id="m-new" class="w-4 h-4 accent-netflixRed">
                             <label class="text-xs text-white">Mark as NEW Release?</label>
                         </div>
-                        <button onclick="addMovie()" class="col-span-2 bg-netflixRed text-white font-bold py-2 rounded text-xs mt-2">Publish Movie</button>
+                        <button id="save-movie-btn" onclick="saveMovie()" class="col-span-2 bg-netflixRed text-white font-bold py-2 rounded text-xs mt-2">Publish Movie</button>
+                        <button onclick="resetAdminForm()" class="col-span-2 bg-gray-700 text-white font-bold py-2 rounded text-xs mt-1">Clear Form</button>
                     </div>
                 </div>
 
@@ -240,18 +254,24 @@
                     </div><div id="admin-cat-list" class="flex flex-wrap gap-2"></div>
                 </div>
 
-                <div class="bg-[#1a1d24] p-3 rounded border border-gray-800">
+                <div class="bg-[#1a1d24] p-3 rounded border border-gray-800 mb-4">
                     <h3 class="font-bold text-xs mb-2 text-red-400">Manage Database</h3>
-                    <div id="admin-movie-list" class="space-y-2"></div>
+                    <div id="admin-movie-list" class="space-y-2 max-h-48 overflow-y-auto pr-2"></div>
+                </div>
+
+                <div class="bg-[#1a1d24] p-3 rounded border border-gray-800">
+                    <h3 class="font-bold text-xs mb-2 text-yellow-400">User Movie Requests</h3>
+                    <div id="admin-request-list" class="space-y-2 max-h-32 overflow-y-auto pr-2"></div>
                 </div>
             </div>
         </div>
     </div>
 
     <!-- ⬇️ BOTTOM NAVIGATION -->
-    <div class="fixed bottom-0 w-full bg-[#0a0c10] border-t border-gray-800 flex justify-around items-center px-2 py-2 z-40 text-[9px] font-bold text-gray-500 shadow-[0_-5px_15px_rgba(0,0,0,0.5)]">
+    <div class="fixed bottom-0 w-full bg-[#0a0c10] border-t border-gray-800 flex justify-between items-center px-4 py-2 z-40 text-[9px] font-bold text-gray-500 shadow-[0_-5px_15px_rgba(0,0,0,0.5)]">
         <div class="bot-nav flex flex-col items-center text-white cursor-pointer" onclick="switchScreen('screen-home', this)"><i class="fa-solid fa-house text-base mb-1"></i>Home</div>
         <div class="bot-nav flex flex-col items-center cursor-pointer" onclick="switchScreen('screen-search', this)"><i class="fa-solid fa-magnifying-glass text-base mb-1"></i>Search</div>
+        <div class="bot-nav flex flex-col items-center cursor-pointer" onclick="openRequestModal()"><i class="fa-solid fa-paper-plane text-base mb-1"></i>Request</div>
         <div class="bot-nav flex flex-col items-center cursor-pointer" onclick="switchScreen('screen-downloads', this)"><i class="fa-solid fa-download text-base mb-1"></i>Downloads</div>
     </div>
 </div>
@@ -261,7 +281,6 @@
     document.addEventListener('contextmenu', event => event.preventDefault());
     document.onkeydown = function(e) { if(e.keyCode == 123 || (e.ctrlKey && e.shiftKey && (e.keyCode == 73 || e.keyCode == 74)) || (e.ctrlKey && e.keyCode == 85)) return false; };
 
-    // PWA INSTALL LOGIC (Fixed)
     if ('serviceWorker' in navigator) { 
         window.addEventListener('load', () => { 
             navigator.serviceWorker.register('./sw.js').catch(err => console.log('SW setup error', err)); 
@@ -303,8 +322,7 @@
     const auth = firebase.auth();
 
     window.onload = () => { 
-        loadData(); loadDownloads(); 
-        // App Open Ad Logic (Shows only once per session after 3 seconds)
+        loadData(); loadDownloads(); loadRequests();
         if (!sessionStorage.getItem('novaflix_open_ad_shown')) {
             setTimeout(() => {
                 showFullScreenAd(() => { console.log("Welcome to NovaFlix"); });
@@ -337,9 +355,21 @@
         db.ref('movies').on('value', snap => {
             allMoviesArray = []; const adminList = document.getElementById('admin-movie-list'); adminList.innerHTML = '';
             if(snap.exists()) {
-                snap.forEach(c => { let m = c.val(); m.id = c.key; allMoviesArray.push(m); adminList.innerHTML += `<div class="bg-black p-2 rounded flex justify-between items-center text-[10px] border border-gray-800"><span class="truncate w-3/4 text-gray-300">${m.title}</span><i class="fa-solid fa-trash text-red-500 cursor-pointer" onclick="deleteMovie('${c.key}')"></i></div>`; });
+                snap.forEach(c => { 
+                    let m = c.val(); m.id = c.key; allMoviesArray.push(m); 
+                    adminList.innerHTML += `<div class="bg-black p-2 rounded flex justify-between items-center text-[10px] border border-gray-800"><span class="truncate w-2/3 text-gray-300">${m.title}</span><div><i class="fa-solid fa-pen-to-square text-blue-500 cursor-pointer mr-4" onclick="editMovie('${c.key}')"></i><i class="fa-solid fa-trash text-red-500 cursor-pointer" onclick="deleteMovie('${c.key}')"></i></div></div>`; 
+                });
                 allMoviesArray.reverse(); renderSlider(allMoviesArray.slice(0, 5)); renderGridWithAds(allMoviesArray, 'movies-grid');
             }
+        });
+    }
+
+    function loadRequests() {
+        db.ref('requests').on('value', snap => {
+            const reqList = document.getElementById('admin-request-list'); reqList.innerHTML = '';
+            if(snap.exists()) {
+                snap.forEach(c => { let r = c.val(); reqList.innerHTML += `<div class="bg-black p-2 rounded flex justify-between items-center text-[10px] border border-gray-800"><span class="truncate w-3/4 text-gray-300">${r.name}</span><i class="fa-solid fa-check text-green-500 cursor-pointer" onclick="deleteRequest('${c.key}')"></i></div>`; });
+            } else { reqList.innerHTML = '<div class="text-[10px] text-gray-500">No new requests.</div>'; }
         });
     }
 
@@ -349,12 +379,22 @@
         renderGridWithAds(category === 'All' ? allMoviesArray : allMoviesArray.filter(m => m.cat === category), 'movies-grid');
     }
 
+    let sliderInterval;
     function renderSlider(movies) {
         const slider = document.getElementById('top-slider'); slider.innerHTML = '';
         movies.forEach(m => { 
             let newBadge = m.isNew ? `<div class="absolute top-2 right-2 bg-netflixRed text-white text-[9px] px-2 py-1 rounded font-bold shadow-lg z-10">NEW</div>` : '';
-            slider.innerHTML += `<div class="slider-item" onclick='openMovieDetail(${JSON.stringify(m).replace(/'/g, "&apos;")})'>${newBadge}<img src="${m.banner || m.poster}" class="w-full h-36 object-cover opacity-90"><div class="absolute bottom-0 w-full bg-gradient-to-t from-black to-transparent p-2 text-white font-black text-sm">${m.title}</div></div>`; 
+            // Slider specifically uses m.banner (Horizontal). If not available, uses poster as fallback.
+            slider.innerHTML += `<div class="slider-item" onclick='openMovieDetail(${JSON.stringify(m).replace(/'/g, "&apos;")})'>${newBadge}<img src="${m.banner || m.poster}" class="w-full h-48 object-cover opacity-90"><div class="absolute bottom-0 w-full bg-gradient-to-t from-black to-transparent p-2 pb-3 text-white font-black text-sm">${m.title}</div></div>`; 
         });
+        
+        // Auto Scroll Logic for Slider
+        clearInterval(sliderInterval);
+        sliderInterval = setInterval(() => {
+            if(slider.scrollWidth <= slider.clientWidth) return;
+            if(slider.scrollLeft + slider.clientWidth >= (slider.scrollWidth - 10)) { slider.scrollTo({left: 0, behavior: 'smooth'}); } 
+            else { slider.scrollBy({left: slider.clientWidth, behavior: 'smooth'}); }
+        }, 3500);
     }
 
     function renderGridWithAds(movies, containerId) {
@@ -363,6 +403,7 @@
         movies.forEach(m => {
             let newBadge = m.isNew ? `<div class="absolute top-1 left-1 bg-netflixRed text-white text-[8px] px-1.5 py-0.5 rounded font-bold z-10 shadow">NEW</div>` : '';
             let catBadge = `<div class="absolute top-1 right-1 bg-black/80 border border-gray-600 text-gray-200 text-[8px] px-1.5 py-0.5 rounded font-bold z-10 shadow">${m.cat}</div>`;
+            // Grid specifically uses m.poster (Vertical).
             grid.innerHTML += `<div class="movie-card" onclick='openMovieDetail(${JSON.stringify(m).replace(/'/g, "&apos;")})'><div class="aspect-[2/3] w-full relative">${newBadge}${catBadge}<img src="${m.poster}" class="w-full h-full object-cover opacity-90"><div class="absolute bottom-0 w-full bg-black/80 text-[9px] text-white p-1 text-center truncate font-semibold">${m.title}</div></div></div>`;
         });
     }
@@ -375,6 +416,7 @@
     // MODALS
     function openModal(id) { document.getElementById(id).classList.add('active'); }
     function closeModal(id) { document.getElementById(id).classList.remove('active'); if(id === 'ad-timer-modal') clearInterval(adInterval); }
+    function openRequestModal() { openModal('request-modal'); }
 
     // FULL SCREEN AD SYSTEM
     let adCallback = null;
@@ -443,16 +485,13 @@
     function checkDownloadStatus() {
         let dls = JSON.parse(localStorage.getItem('novaflix_dls')) || [];
         let btn = document.getElementById('btn-download');
-        if(dls.some(m => m.title === currentActiveMovie.title)) {
-            btn.classList.add('green-icon'); btn.innerHTML = `<i class="fa-solid fa-circle-check text-lg"></i><span class="text-[9px] font-bold">Downloaded</span>`;
-        } else {
-            btn.classList.remove('green-icon'); btn.innerHTML = `<i class="fa-solid fa-download text-lg"></i><span class="text-[9px] font-bold">Download</span>`;
-        }
+        // Now it just shows normal download icon regardless, user can redownload anytime.
+        btn.classList.remove('green-icon'); 
+        btn.innerHTML = `<i class="fa-solid fa-download text-lg"></i><span class="text-[9px] font-bold">Download</span>`;
     }
 
     function triggerDownload() {
-        let dls = JSON.parse(localStorage.getItem('novaflix_dls')) || [];
-        if(dls.some(m => m.title === currentActiveMovie.title)) { return alert("Movie is already downloaded! Check Downloads section."); }
+        // Block removed: Users can now download multiple times without "already downloaded" alert.
         showFullScreenAd(() => { openModal('quality-modal'); });
     }
 
@@ -481,28 +520,39 @@
         }, 1000);
     }
     
+    // Executes Download URL silently in background (does not show URL string in UI)
     function execute1DM() { if(!currentActiveMovie || !currentActiveMovie.dl) return; window.location.href = `intent://${currentActiveMovie.dl.replace(/^https?:\/\//, '')}#Intent;scheme=${currentActiveMovie.dl.startsWith('https') ? 'https' : 'http'};package=idm.internet.download.manager;S.browser_fallback_url=${encodeURIComponent(currentActiveMovie.dl)};end`; }
     function executeDirect() { if(currentActiveMovie && currentActiveMovie.dl) window.open(currentActiveMovie.dl, '_blank'); }
 
     function saveToDownloads() {
         if(!currentActiveMovie) return; let dls = JSON.parse(localStorage.getItem('novaflix_dls')) || [];
-        if(!dls.some(m => m.title === currentActiveMovie.title)) { dls.unshift(currentActiveMovie); localStorage.setItem('novaflix_dls', JSON.stringify(dls)); loadDownloads(); checkDownloadStatus(); }
+        if(!dls.some(m => m.title === currentActiveMovie.title)) { dls.unshift(currentActiveMovie); localStorage.setItem('novaflix_dls', JSON.stringify(dls)); loadDownloads(); }
     }
     
     function loadDownloads() { 
         const grid = document.getElementById('downloads-grid'); grid.innerHTML = ''; 
         let dls = JSON.parse(localStorage.getItem('novaflix_dls')) || [];
-        if(dls.length === 0) return grid.innerHTML = '<div class="col-span-full text-center text-gray-500 text-xs py-4">No downloaded movies yet.</div>';
+        if(dls.length === 0) return grid.innerHTML = '<div class="col-span-full text-center text-gray-500 text-xs py-4">No downloaded movies history.</div>';
         dls.forEach((m, i) => { grid.innerHTML += `<div class="movie-card"><div class="absolute top-1 right-1 bg-black/80 rounded-full w-6 h-6 flex justify-center items-center z-20 shadow cursor-pointer text-red-500" onclick="removeDownload(${i})"><i class="fa-solid fa-trash text-[10px]"></i></div><img src="${m.poster}" class="w-full aspect-[2/3] object-cover opacity-90" onclick='openMovieDetail(${JSON.stringify(m).replace(/'/g, "&apos;")})'><div class="absolute bottom-0 w-full bg-black/80 text-[9px] text-white p-1 text-center truncate font-semibold">${m.title}</div></div>`; });
     }
 
     function removeDownload(index) {
-        if(confirm("Delete this movie from downloads?")) {
+        if(confirm("Delete this history log?")) {
             let dls = JSON.parse(localStorage.getItem('novaflix_dls')) || [];
             dls.splice(index, 1); localStorage.setItem('novaflix_dls', JSON.stringify(dls));
-            loadDownloads(); if(document.getElementById('movie-detail-screen').classList.contains('active')) checkDownloadStatus();
+            loadDownloads(); 
         }
     }
+
+    // USER REQUESTS
+    function submitRequest() {
+        const name = document.getElementById('req-movie-name').value;
+        if(!name) return alert("Please enter a movie name");
+        db.ref('requests').push({ name: name, date: new Date().toISOString() }).then(() => {
+            alert("Request submitted successfully!"); document.getElementById('req-movie-name').value = ''; closeModal('request-modal');
+        });
+    }
+    function deleteRequest(id) { if(confirm('Mark as done & delete?')) db.ref('requests/' + id).remove(); }
 
     // ADMIN 
     let clickCount = 0; let clickTimer;
@@ -513,13 +563,52 @@
     function addCategory() { const cat = document.getElementById('new-cat').value; if(cat) { db.ref('categories').push({name: cat}); document.getElementById('new-cat').value = ''; } }
     function deleteCategory(id) { if(confirm('Delete Category?')) db.ref('categories/' + id).remove(); }
     
-    function addMovie() { 
+    function editMovie(id) {
+        let m = allMoviesArray.find(x => x.id === id);
+        if(m) {
+            document.getElementById('m-id').value = m.id;
+            document.getElementById('m-title').value = m.title;
+            document.getElementById('m-poster').value = m.poster || '';
+            document.getElementById('m-banner').value = m.banner || '';
+            document.getElementById('m-cat-select').value = m.cat;
+            document.getElementById('m-lang').value = m.language || 'Hindi';
+            document.getElementById('m-quality').value = m.quality || '1080p HD';
+            document.getElementById('m-stream').value = m.stream || '';
+            document.getElementById('m-dl').value = m.dl || '';
+            document.getElementById('m-new').checked = m.isNew || false;
+            document.getElementById('save-movie-btn').innerText = "Update Movie";
+        }
+    }
+
+    function saveMovie() { 
+        const id = document.getElementById('m-id').value;
         const data = { 
-            title: document.getElementById('m-title').value, poster: document.getElementById('m-poster').value, banner: document.getElementById('m-banner').value, cat: document.getElementById('m-cat-select').value, language: document.getElementById('m-lang').value || 'Hindi', quality: document.getElementById('m-quality').value || '1080p HD', stream: document.getElementById('m-stream').value, dl: document.getElementById('m-dl').value, isNew: document.getElementById('m-new').checked
+            title: document.getElementById('m-title').value, 
+            poster: document.getElementById('m-poster').value, 
+            banner: document.getElementById('m-banner').value, 
+            cat: document.getElementById('m-cat-select').value, 
+            language: document.getElementById('m-lang').value || 'Hindi', 
+            quality: document.getElementById('m-quality').value || '1080p HD', 
+            stream: document.getElementById('m-stream').value, 
+            dl: document.getElementById('m-dl').value, 
+            isNew: document.getElementById('m-new').checked
         }; 
         if(!data.title || !data.cat || !data.stream) return alert('Title, Category & Stream URL are required!'); 
-        db.ref('movies').push(data).then(() => { alert('Movie Published!'); document.querySelectorAll('#admin-dash-modal input[type="text"]').forEach(i=>i.value=''); document.getElementById('m-new').checked = false; }); 
+        
+        if(id) {
+            db.ref('movies/' + id).update(data).then(() => { alert('Movie Updated!'); resetAdminForm(); });
+        } else {
+            db.ref('movies').push(data).then(() => { alert('Movie Published!'); resetAdminForm(); });
+        }
     }
+
+    function resetAdminForm() {
+        document.getElementById('m-id').value = '';
+        document.querySelectorAll('#admin-dash-modal input[type="text"]').forEach(i=>i.value=''); 
+        document.getElementById('m-new').checked = false; 
+        document.getElementById('save-movie-btn').innerText = "Publish Movie";
+    }
+
     function deleteMovie(id) { if(confirm('Delete Movie?')) db.ref('movies/' + id).remove(); }
 </script>
 </body>
