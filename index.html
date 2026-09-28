@@ -57,9 +57,7 @@
         .slider-item { scroll-snap-align: center; flex: 0 0 100%; max-width: 100%; position: relative; border-radius: 8px; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.5); }
         .slider-item-small { scroll-snap-align: start; flex: 0 0 40%; max-width: 150px; position: relative; border-radius: 4px; overflow: hidden; cursor: pointer; }
         
-        .ad-banner { width: 100%; background-color: #1a1d24; color: #666; text-align: center; padding: 15px 0; border: 1px dashed #333; font-size: 11px; border-radius: 4px; }
-        
-        /* 🔥 AUTO ADJUSTING AD CONTAINER (Tumhara Naya Logic) */
+        /* 🔥 AUTO ADJUSTING AD CONTAINER */
         .ad-container-auto {
             width: 100%; display: flex; justify-content: center; align-items: center; 
             overflow: hidden; background-color: transparent; margin: 10px 0;
@@ -75,7 +73,7 @@
         input, textarea, select { user-select: text; -webkit-user-select: text; outline: none; width: 100%; }
 
         /* Admin Mode Security: Hide Ads */
-        body.admin-mode .ad-banner { display: none !important; }
+        body.admin-mode .ad-container-auto, body.admin-mode #social-bar-container { display: none !important; }
     </style>
 </head>
 <body oncontextmenu="return false;">
@@ -111,8 +109,18 @@
         
         <div class="slider-container hide-scroll px-3 w-full" id="top-slider"></div>
 
-        <div class="ad-banner mx-3 mt-2 mb-4 w-auto shadow-lg">
-            Home Screen Banner Ad Placement
+        <!-- 💰 HOME SCREEN 320x50 AD -->
+        <div class="ad-container-auto mx-3 mt-2 mb-4 w-auto shadow-lg">
+            <script type="text/javascript">
+                atOptions = {
+                    'key' : '5919d5a8a26c28e4a3df2b75d2fafb8e',
+                    'format' : 'iframe',
+                    'height' : 50,
+                    'width' : 320,
+                    'params' : {}
+                };
+            </script>
+            <script type="text/javascript" src="https://www.highrevenueformat.com/5919d5a8a26c28e4a3df2b75d2fafb8e/invoke.js"></script>
         </div>
 
         <div class="p-3 w-full">
@@ -125,16 +133,26 @@
     <div id="screen-downloads" class="app-screen p-3 w-full">
         <h2 class="text-lg font-bold text-white mb-2 border-l-2 border-blue-500 pl-2">My Downloads History</h2>
         
-        <!-- 🔥 Download History Top Ad -->
-        <div class="ad-container-auto ad-banner mb-4 shadow-lg" id="dl-top-ad">
-            Download History Top Ad (300x250 or Native)
+        <!-- 💰 DOWNLOAD HISTORY TOP AD (300x250) -->
+        <div class="ad-container-auto mb-4 shadow-lg" id="dl-top-ad">
+            <script type="text/javascript">
+                atOptions = {
+                    'key' : '70529edcf380574be4f66f1169017412',
+                    'format' : 'iframe',
+                    'height' : 250,
+                    'width' : 300,
+                    'params' : {}
+                };
+            </script>
+            <script type="text/javascript" src="https://www.highrevenueformat.com/70529edcf380574be4f66f1169017412/invoke.js"></script>
         </div>
         
         <div class="grid grid-cols-3 sm:grid-cols-4 gap-2 w-full" id="downloads-grid"></div>
         
-        <!-- 🔥 Download History Bottom Ad -->
-        <div class="ad-container-auto ad-banner mt-4 shadow-lg" id="dl-bottom-ad">
-            Download History Bottom Ad (300x250 or Native)
+        <!-- 💰 DOWNLOAD HISTORY BOTTOM AD (NATIVE BANNER) -->
+        <div class="ad-container-auto mt-4 shadow-lg" id="dl-bottom-ad">
+            <script async="async" data-cfasync="false" src="https://pl31549832.profitableratecpmnetwork.com/ea6e287b08185a5139650d189e45ac9a/invoke.js"></script>
+            <div id="container-ea6e287b08185a5139650d189e45ac9a"></div>
         </div>
     </div>
 
@@ -145,9 +163,18 @@
             <input type="text" id="search-input" placeholder="Search movies..." class="flex-1 bg-transparent text-sm text-white outline-none p-2" onkeyup="searchContent()">
         </div>
         
-        <!-- 🔥 Search Bar Bottom Ad -->
-        <div class="ad-container-auto ad-banner mb-4 shadow-lg" id="search-top-ad">
-            Search Bar Bottom Ad (300x250)
+        <!-- 💰 SEARCH BAR BOTTOM AD (300x250) -->
+        <div class="ad-container-auto mb-4 shadow-lg" id="search-top-ad">
+            <script type="text/javascript">
+                atOptions = {
+                    'key' : '70529edcf380574be4f66f1169017412',
+                    'format' : 'iframe',
+                    'height' : 250,
+                    'width' : 300,
+                    'params' : {}
+                };
+            </script>
+            <script type="text/javascript" src="https://www.highrevenueformat.com/70529edcf380574be4f66f1169017412/invoke.js"></script>
         </div>
         
         <div id="search-results" class="grid grid-cols-3 sm:grid-cols-4 gap-2 w-full"></div>
@@ -183,12 +210,23 @@
             <img id="detail-poster" src="" class="w-20 sm:w-24 rounded shadow-lg border border-gray-700 object-cover">
         </div>
 
-        <!-- 🔥 NAYA WATCH NOW BUTTON (Ad ke baad Premium Popup khulega) -->
         <button onclick="handleWatchNowClick()" class="w-full bg-gradient-to-r from-[#f0a500] to-[#d69300] text-black font-black text-sm py-3.5 rounded-md mt-5 shadow-[0_0_15px_rgba(240,165,0,0.4)] active:scale-95 transition-transform flex justify-center items-center gap-2">
             <i class="fa-solid fa-play text-xs"></i> Watch Now
         </button>
 
-        <div class="ad-banner mt-4">In-Stream Ad Placement</div>
+        <!-- 💰 IN-STREAM AD (320x50) -->
+        <div class="ad-container-auto mt-4">
+            <script type="text/javascript">
+                atOptions = {
+                    'key' : '5919d5a8a26c28e4a3df2b75d2fafb8e',
+                    'format' : 'iframe',
+                    'height' : 50,
+                    'width' : 320,
+                    'params' : {}
+                };
+            </script>
+            <script type="text/javascript" src="https://www.highrevenueformat.com/5919d5a8a26c28e4a3df2b75d2fafb8e/invoke.js"></script>
+        </div>
 
         <div class="flex justify-around items-center mt-4 border-t border-b border-gray-800 py-3 w-full">
             <div class="icon-btn" onclick="toggleLike()" id="btn-like">
@@ -205,41 +243,44 @@
             </div>
         </div>
 
-        <div class="ad-banner mt-4">Sponsored Ad</div>
+        <!-- 💰 SPONSORED AD (320x50) -->
+        <div class="ad-container-auto mt-4">
+            <script type="text/javascript">
+                atOptions = {
+                    'key' : '5919d5a8a26c28e4a3df2b75d2fafb8e',
+                    'format' : 'iframe',
+                    'height' : 50,
+                    'width' : 320,
+                    'params' : {}
+                };
+            </script>
+            <script type="text/javascript" src="https://www.highrevenueformat.com/5919d5a8a26c28e4a3df2b75d2fafb8e/invoke.js"></script>
+        </div>
 
         <h2 class="text-sm font-bold text-white mt-6 border-l-2 border-netflixRed pl-2 mb-2">Recommended for You</h2>
         <div class="slider-container hide-scroll w-full" id="recommended-slider"></div>
     </div>
 </div>
 
-<!-- 👑 PREMIUM NOTICE MODAL (Ultra Pro Max Design) -->
+<!-- 👑 PREMIUM NOTICE MODAL -->
 <div id="premium-notice-modal" class="modal-overlay" style="z-index: 999995;">
     <div class="bg-[#0f121a] p-6 rounded-2xl w-11/12 max-w-sm border border-gray-700 relative shadow-[0_0_30px_rgba(229,9,20,0.3)] text-center overflow-hidden">
-        <!-- Top glowing line -->
         <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-[#E50914] to-transparent"></div>
-        
         <button onclick="closeModal('premium-notice-modal')" class="absolute top-3 right-3 text-gray-500 hover:text-white transition"><i class="fa-solid fa-xmark text-lg"></i></button>
-        
-        <!-- Premium Icon -->
         <div class="w-16 h-16 mx-auto bg-gradient-to-br from-[#1a1d24] to-[#0a0c10] rounded-full flex items-center justify-center border border-gray-700 shadow-inner mb-4 relative">
             <div class="absolute inset-0 bg-yellow-500 blur-md opacity-20 rounded-full"></div>
             <i class="fa-solid fa-crown text-yellow-500 text-3xl drop-shadow-[0_0_10px_rgba(234,179,8,0.5)] relative z-10"></i>
         </div>
-        
         <h2 class="text-xl font-black text-white mb-2 tracking-wide uppercase">Live Watch Coming Soon</h2>
         <p class="text-[13px] text-gray-400 mb-4 leading-relaxed">
             Priya User, humare platform par Live Streaming feature jaldi add ho raha hai. Tab tak bina buffering movie dekhne ke liye kripya HD mein Download karein.
         </p>
-        
-        <!-- 🔥 VIP Highlight Box (Golden Message) -->
         <div class="bg-yellow-900/20 border border-yellow-500/50 rounded-lg p-3 mb-5 shadow-[0_0_15px_rgba(234,179,8,0.15)] relative overflow-hidden">
             <div class="absolute inset-0 bg-gradient-to-r from-transparent via-yellow-500/10 to-transparent animate-pulse"></div>
             <p class="text-yellow-400 font-bold text-sm drop-shadow-md relative z-10">
                 ❤️ NovaFlix par apna pyar banaye rakhne ke liye dhanyawad ✨
             </p>
         </div>
-        
-        <!-- Action Button -->
         <button onclick="closeModal('premium-notice-modal'); openModal('quality-modal');" class="w-full bg-gradient-to-r from-[#E50914] to-[#b8060e] text-white font-bold py-3.5 rounded-xl text-sm shadow-[0_4px_15px_rgba(229,9,20,0.4)] active:scale-95 transition-transform flex justify-center items-center gap-2">
             <i class="fa-solid fa-download"></i> Download Movie Now
         </button>
@@ -254,8 +295,19 @@
             <button id="ad-skip-btn" onclick="closeFullScreenAd()" class="hidden bg-netflixRed text-white px-3 py-1 rounded text-xs font-bold"><i class="fa-solid fa-xmark mr-1"></i> Close Ad</button>
         </div>
         <div class="text-gray-500 mb-4 text-xs font-bold uppercase tracking-widest">Advertisement</div>
-        <div class="w-11/12 max-w-md h-64 bg-[#1a1d24] border border-gray-700 flex justify-center items-center rounded-lg shadow-[0_0_20px_rgba(255,255,255,0.1)]">
-            <p class="text-gray-400 text-sm text-center px-4">Your Full-Screen Video/Display Ad Here</p>
+        
+        <!-- 💰 MODAL AD (300x250) -->
+        <div class="w-11/12 max-w-md h-auto bg-[#1a1d24] border border-gray-700 flex justify-center items-center rounded-lg shadow-[0_0_20px_rgba(255,255,255,0.1)] p-2">
+            <script type="text/javascript">
+                atOptions = {
+                    'key' : '70529edcf380574be4f66f1169017412',
+                    'format' : 'iframe',
+                    'height' : 250,
+                    'width' : 300,
+                    'params' : {}
+                };
+            </script>
+            <script type="text/javascript" src="https://www.highrevenueformat.com/70529edcf380574be4f66f1169017412/invoke.js"></script>
         </div>
     </div>
 </div>
@@ -275,18 +327,36 @@
     <div class="bg-[#14161c] p-5 rounded w-11/12 max-w-sm border border-gray-800 relative shadow-2xl">
         <button onclick="closeModal('request-modal')" class="absolute top-2 right-2 text-gray-400 p-2"><i class="fa-solid fa-xmark"></i></button>
         
-        <!-- 🔥 Request Modal Top Ad -->
-        <div class="ad-container-auto ad-banner mb-4 shadow-lg w-full">
-            Request Form Top Ad (300x250)
+        <!-- 💰 REQUEST TOP AD (320x50) -->
+        <div class="ad-container-auto mb-4 w-full">
+            <script type="text/javascript">
+                atOptions = {
+                    'key' : '5919d5a8a26c28e4a3df2b75d2fafb8e',
+                    'format' : 'iframe',
+                    'height' : 50,
+                    'width' : 320,
+                    'params' : {}
+                };
+            </script>
+            <script type="text/javascript" src="https://www.highrevenueformat.com/5919d5a8a26c28e4a3df2b75d2fafb8e/invoke.js"></script>
         </div>
 
         <h2 class="text-lg font-bold text-white mb-4 text-center">Request a Movie</h2>
         <input type="text" id="req-movie-name" placeholder="Enter Movie Name" class="bg-black p-3 rounded mb-3 text-sm text-white border border-gray-700">
         <button onclick="submitRequest()" class="w-full bg-netflixRed text-white font-bold py-3 rounded text-sm">Submit Request</button>
 
-        <!-- 🔥 Request Modal Bottom Ad -->
-        <div class="ad-container-auto ad-banner mt-4 shadow-lg w-full">
-            Request Form Bottom Ad (300x250)
+        <!-- 💰 REQUEST BOTTOM AD (300x250) -->
+        <div class="ad-container-auto mt-4 w-full">
+            <script type="text/javascript">
+                atOptions = {
+                    'key' : '70529edcf380574be4f66f1169017412',
+                    'format' : 'iframe',
+                    'height' : 250,
+                    'width' : 300,
+                    'params' : {}
+                };
+            </script>
+            <script type="text/javascript" src="https://www.highrevenueformat.com/70529edcf380574be4f66f1169017412/invoke.js"></script>
         </div>
     </div>
 </div>
@@ -306,7 +376,21 @@
 <div id="ad-timer-modal" class="modal-overlay" style="background: rgba(0,0,0,0.98);">
     <div class="text-center w-11/12 max-w-md p-4">
         <h2 class="text-xl font-bold text-amazonBtn mb-2">Generating Link...</h2>
-        <div class="w-full h-40 bg-[#141414] border border-gray-700 flex justify-center items-center mt-4"><span class="text-gray-600 text-xs">[ Video Ad Playing Here ]</span></div>
+        
+        <!-- 💰 DOWNLOAD TIMER AD (300x250) -->
+        <div class="w-full h-auto bg-[#141414] border border-gray-700 flex justify-center items-center mt-4 p-2">
+            <script type="text/javascript">
+                atOptions = {
+                    'key' : '70529edcf380574be4f66f1169017412',
+                    'format' : 'iframe',
+                    'height' : 250,
+                    'width' : 300,
+                    'params' : {}
+                };
+            </script>
+            <script type="text/javascript" src="https://www.highrevenueformat.com/70529edcf380574be4f66f1169017412/invoke.js"></script>
+        </div>
+
         <div class="text-5xl font-black text-white mb-6 mt-6" id="countdown-timer">30</div>
         
         <div id="final-dl-buttons" class="hidden flex flex-col gap-3 w-full">
@@ -327,13 +411,10 @@
         <button onclick="closeModal('admin-login-modal')" class="absolute top-2 right-2 text-gray-400 p-2"><i class="fa-solid fa-xmark"></i></button>
         <h2 class="text-xl font-bold text-white mb-6">Admin Login</h2>
         
-        <!-- BIOMETRIC LOGIN BUTTON -->
         <button id="bio-btn" onclick="loginWithBio()" class="hidden w-full bg-[#1f232e] text-white font-bold py-3 rounded text-sm mb-4 border border-gray-600 shadow-[0_0_15px_rgba(255,255,255,0.1)]">
             <i class="fa-solid fa-fingerprint text-green-400 text-lg mr-2"></i> Face ID / Fingerprint
         </button>
-        
         <div id="bio-divider" class="hidden text-xs text-gray-500 mb-4 text-center">-- OR USE PASSWORD --</div>
-
         <input type="email" id="admin-email" placeholder="Email" class="bg-black p-3 rounded w-full mb-3 text-sm text-white border border-gray-700">
         <input type="password" id="admin-password" placeholder="Password" class="bg-black p-3 rounded w-full mb-5 text-sm text-white border border-gray-700">
         <button onclick="loginAdmin()" class="w-full bg-netflixRed text-white font-bold py-3 rounded text-sm">Login (Master Lock)</button>
@@ -351,8 +432,6 @@
             </div>
         </div>
         <div class="p-3 overflow-y-auto flex-1 w-full">
-            
-            <!-- 📊 LIVE ANALYTICS DASHBOARD -->
             <div class="bg-[#1a1d24] p-3 rounded mb-4 border border-gray-800 shadow-md">
                 <h3 class="font-bold text-xs mb-3 text-purple-400"><i class="fa-solid fa-chart-line mr-1"></i> Live Analytics</h3>
                 <div class="grid grid-cols-3 gap-2 text-center">
@@ -434,6 +513,11 @@
     <div class="bot-nav flex flex-col items-center cursor-pointer w-1/4" onclick="switchScreen('screen-search', this)"><i class="fa-solid fa-magnifying-glass text-base mb-1"></i>Search</div>
     <div class="bot-nav flex flex-col items-center cursor-pointer w-1/4" onclick="openRequestModal()"><i class="fa-solid fa-paper-plane text-base mb-1"></i>Request</div>
     <div class="bot-nav flex flex-col items-center cursor-pointer w-1/4" onclick="switchScreen('screen-downloads', this)"><i class="fa-solid fa-download text-base mb-1"></i>Downloads</div>
+</div>
+
+<!-- 💰 SOCIAL BAR (POPUP AD) -->
+<div id="social-bar-container">
+    <script src="https://pl31549831.profitableratecpmnetwork.com/8b/0b/c0/8b0bc0c85eb7584aa571a6afe7ea708f.js"></script>
 </div>
 
 <script>
@@ -594,8 +678,9 @@
             let catBadge = `<div class="absolute top-1 right-1 bg-black/80 border border-gray-600 text-gray-200 text-[8px] px-1.5 py-0.5 rounded font-bold z-10 shadow">${m.cat}</div>`;
             grid.innerHTML += `<div class="movie-card" onclick='openMovieDetail(${JSON.stringify(m).replace(/'/g, "&apos;")})'><div class="aspect-[2/3] w-full relative">${newBadge}${catBadge}<img src="${m.poster}" class="w-full h-full object-cover opacity-90"><div class="absolute bottom-0 w-full bg-black/80 text-[9px] text-white p-1 text-center truncate font-semibold">${m.title}</div></div></div>`;
             
+            // 🔥 DYNAMIC SMART LINK AD EVERY 6 MOVIES
             if ((index + 1) % 6 === 0 && (index + 1) !== movies.length) {
-                grid.innerHTML += `<div class="col-span-full ad-banner my-2 w-full shadow-lg">Grid In-Feed Ad Placement</div>`;
+                grid.innerHTML += `<div class="col-span-full my-2 w-full shadow-lg rounded overflow-hidden cursor-pointer border border-gray-700" onclick="window.open('https://www.profitableratecpmnetwork.com/c946hyefut?key=1bc48e7a796f76d9d2995279f10f3c8c', '_blank')"><div class="w-full bg-[#1a1d24] flex items-center justify-center p-3 text-xs font-bold text-gray-400 gap-2"><i class="fa-solid fa-gift text-yellow-500"></i> Click Here To Unlock Premium Content</div></div>`;
             }
         });
     }
@@ -639,7 +724,6 @@
 
     function closeFullScreenAd() { clearInterval(adIntervalTimer); isAdPlaying = false; document.getElementById('fullscreen-ad-modal').classList.remove('active'); if (adCallback) { adCallback(); adCallback = null; } }
 
-    // 🔥 WATCH NOW BUTTON CLICK LOGIC (Ad + Premium Notice)
     function handleWatchNowClick() {
         showFullScreenAd(() => {
             openModal('premium-notice-modal');
@@ -668,11 +752,22 @@
 
     function populateRecommended(category, excludeId) { let recMovies = allMoviesArray.filter(m => m.cat === category && m.id !== excludeId); if(recMovies.length === 0) recMovies = allMoviesArray.filter(m => m.id !== excludeId).slice(0, 5); const slider = document.getElementById('recommended-slider'); slider.innerHTML = ''; recMovies.forEach(m => { slider.innerHTML += `<div class="slider-item-small" onclick='openMovieDetail(${JSON.stringify(m).replace(/'/g, "&apos;")})'><img src="${m.poster}" class="w-full aspect-[2/3] object-cover opacity-90"><div class="absolute bottom-0 w-full bg-black/80 text-[9px] text-white p-1 text-center truncate">${m.title}</div></div>`; }); }
     
-    function execute1DM() { let dlLink = currentActiveEpisodeLink || currentActiveMovie.dl; if(!dlLink) { alert("Download link not available!"); return; } window.location.href = `intent://${dlLink.replace(/^https?:\/\//, '')}#Intent;scheme=${dlLink.startsWith('https') ? 'https' : 'http'};package=idm.internet.download.manager;S.browser_fallback_url=${encodeURIComponent(dlLink)};end`; }
-    function executeDirect() { let dlLink = currentActiveEpisodeLink || currentActiveMovie.dl; if(!dlLink) { alert("Download link not available!"); return; } window.open(dlLink, '_blank'); }
+    // 🔥 SMARTLINK IMPLEMENTED ON ACTUAL DOWNLOAD CLICKS
+    function execute1DM() { 
+        let dlLink = currentActiveEpisodeLink || currentActiveMovie.dl; 
+        if(!dlLink) { alert("Download link not available!"); return; } 
+        window.open('https://www.profitableratecpmnetwork.com/c946hyefut?key=1bc48e7a796f76d9d2995279f10f3c8c', '_blank'); // Smartlink Earning
+        window.location.href = `intent://${dlLink.replace(/^https?:\/\//, '')}#Intent;scheme=${dlLink.startsWith('https') ? 'https' : 'http'};package=idm.internet.download.manager;S.browser_fallback_url=${encodeURIComponent(dlLink)};end`; 
+    }
+    function executeDirect() { 
+        let dlLink = currentActiveEpisodeLink || currentActiveMovie.dl; 
+        if(!dlLink) { alert("Download link not available!"); return; } 
+        window.open('https://www.profitableratecpmnetwork.com/c946hyefut?key=1bc48e7a796f76d9d2995279f10f3c8c', '_blank'); // Smartlink Earning
+        window.open(dlLink, '_self'); // Opening real file in same tab so popup opens ad
+    }
+    
     function saveToDownloads() { if(!currentActiveMovie) return; let dls = JSON.parse(localStorage.getItem('novaflix_dls')) || []; if(!dls.some(m => m.title === currentActiveMovie.title)) { dls.unshift(currentActiveMovie); localStorage.setItem('novaflix_dls', JSON.stringify(dls)); loadDownloads(); } }
     
-    // 🔥 DOWNLOADS HISTORY LISTING LOGIC
     function loadDownloads() { 
         const grid = document.getElementById('downloads-grid'); 
         grid.innerHTML = ''; 
@@ -686,9 +781,9 @@
         dls.forEach((m, index) => { 
             grid.innerHTML += `<div class="movie-card"><div class="absolute top-1 right-1 bg-black/80 rounded-full w-6 h-6 flex justify-center items-center z-20 shadow cursor-pointer text-red-500" onclick="removeDownload(${index})"><i class="fa-solid fa-trash text-[10px]"></i></div><img src="${m.poster}" class="w-full aspect-[2/3] object-cover opacity-90" onclick='openMovieDetail(${JSON.stringify(m).replace(/'/g, "&apos;")})'><div class="absolute bottom-0 w-full bg-black/80 text-[9px] text-white p-1 text-center truncate font-semibold">${m.title}</div></div>`; 
             
-            // Add grid in-feed ads (Every 3 movies) in downloads history
+            // 🔥 DYNAMIC SMART LINK AD EVERY 3 MOVIES IN DOWNLOADS
             if ((index + 1) % 3 === 0 && (index + 1) !== dls.length) {
-                grid.innerHTML += `<div class="col-span-full ad-container-auto ad-banner my-2 w-full shadow-lg">Download Grid In-Feed Ad</div>`;
+                grid.innerHTML += `<div class="col-span-full my-2 w-full shadow-lg rounded overflow-hidden cursor-pointer border border-gray-700" onclick="window.open('https://www.profitableratecpmnetwork.com/c946hyefut?key=1bc48e7a796f76d9d2995279f10f3c8c', '_blank')"><div class="w-full bg-[#1a1d24] flex items-center justify-center p-3 text-xs font-bold text-gray-400 gap-2"><i class="fa-solid fa-gift text-yellow-500"></i> Click Here To Unlock Premium Content</div></div>`;
             }
         }); 
     }
