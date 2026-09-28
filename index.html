@@ -1,3 +1,6 @@
+import re
+
+html_code = """
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -69,6 +72,17 @@
 
         /* Admin Mode Security: Hide Ads */
         body.admin-mode .ad-banner { display: none !important; }
+        
+        /* Auto Adjusting Ad Container */
+        .ad-container-auto {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            background-color: transparent;
+            margin: 10px 0;
+        }
     </style>
 </head>
 <body oncontextmenu="return false;">
@@ -118,7 +132,17 @@
     <!-- ⬇️ DOWNLOADS -->
     <div id="screen-downloads" class="app-screen p-3 w-full">
         <h2 class="text-lg font-bold text-white mb-2 border-l-2 border-blue-500 pl-2">My Downloads History</h2>
+        <!-- Download History Top Ad -->
+        <div class="ad-container-auto ad-banner mb-4 shadow-lg" id="dl-top-ad">
+            Download History Top Ad (300x250 or Native)
+        </div>
+        
         <div class="grid grid-cols-3 sm:grid-cols-4 gap-2 w-full" id="downloads-grid"></div>
+        
+        <!-- Download History Bottom Ad -->
+        <div class="ad-container-auto ad-banner mt-4 shadow-lg" id="dl-bottom-ad">
+            Download History Bottom Ad (300x250 or Native)
+        </div>
     </div>
 
     <!-- 🔍 SEARCH -->
@@ -127,6 +151,12 @@
             <i class="fa-solid fa-magnifying-glass text-gray-400 p-3 text-sm"></i>
             <input type="text" id="search-input" placeholder="Search movies..." class="flex-1 bg-transparent text-sm text-white outline-none p-2" onkeyup="searchContent()">
         </div>
+        
+        <!-- Search Bar Bottom Ad -->
+        <div class="ad-container-auto ad-banner mb-4 shadow-lg" id="search-top-ad">
+            Search Bar Bottom Ad (300x250)
+        </div>
+        
         <div id="search-results" class="grid grid-cols-3 sm:grid-cols-4 gap-2 w-full"></div>
     </div>
 </div> 
@@ -216,9 +246,20 @@
 <div id="request-modal" class="modal-overlay">
     <div class="bg-[#14161c] p-5 rounded w-11/12 max-w-sm border border-gray-800 relative shadow-2xl">
         <button onclick="closeModal('request-modal')" class="absolute top-2 right-2 text-gray-400 p-2"><i class="fa-solid fa-xmark"></i></button>
+        
+        <!-- Request Modal Top Ad -->
+        <div class="ad-container-auto ad-banner mb-4 shadow-lg" id="request-top-ad">
+            Request Form Top Ad (300x250)
+        </div>
+
         <h2 class="text-lg font-bold text-white mb-4 text-center">Request a Movie</h2>
         <input type="text" id="req-movie-name" placeholder="Enter Movie Name" class="bg-black p-3 rounded mb-3 text-sm text-white border border-gray-700">
         <button onclick="submitRequest()" class="w-full bg-netflixRed text-white font-bold py-3 rounded text-sm">Submit Request</button>
+
+        <!-- Request Modal Bottom Ad -->
+        <div class="ad-container-auto ad-banner mt-4 shadow-lg" id="request-bottom-ad">
+            Request Form Bottom Ad (300x250)
+        </div>
     </div>
 </div>
 
@@ -523,15 +564,19 @@
 
     function renderGridWithAds(movies, containerId) {
         const grid = document.getElementById(containerId); grid.innerHTML = '';
-        if(movies.length === 0) return grid.innerHTML = '<div class="col-span-full text-center text-gray-500 text-xs py-4">No movies found.</div>';
+        if(movies.length === 0) {
+            grid.innerHTML = '<div class="col-span-full text-center text-gray-500 text-xs py-4">No movies found.</div>';
+            return;
+        }
         
         movies.forEach((m, index) => {
             let newBadge = m.isNew ? `<div class="absolute top-1 left-1 bg-netflixRed text-white text-[8px] px-1.5 py-0.5 rounded font-bold z-10 shadow">NEW</div>` : '';
             let catBadge = `<div class="absolute top-1 right-1 bg-black/80 border border-gray-600 text-gray-200 text-[8px] px-1.5 py-0.5 rounded font-bold z-10 shadow">${m.cat}</div>`;
             grid.innerHTML += `<div class="movie-card" onclick='openMovieDetail(${JSON.stringify(m).replace(/'/g, "&apos;")})'><div class="aspect-[2/3] w-full relative">${newBadge}${catBadge}<img src="${m.poster}" class="w-full h-full object-cover opacity-90"><div class="absolute bottom-0 w-full bg-black/80 text-[9px] text-white p-1 text-center truncate font-semibold">${m.title}</div></div></div>`;
             
+            // Add grid in-feed ads (Every 6 movies)
             if ((index + 1) % 6 === 0 && (index + 1) !== movies.length) {
-                grid.innerHTML += `<div class="col-span-full ad-banner my-2 w-full shadow-lg">Grid In-Feed Ad Placement</div>`;
+                grid.innerHTML += `<div class="col-span-full ad-container-auto ad-banner my-2 w-full shadow-lg">Grid In-Feed Ad Placement</div>`;
             }
         });
     }
@@ -601,7 +646,27 @@
     function execute1DM() { let dlLink = currentActiveEpisodeLink || currentActiveMovie.dl; if(!dlLink) { alert("Download link not available!"); return; } window.location.href = `intent://${dlLink.replace(/^https?:\/\//, '')}#Intent;scheme=${dlLink.startsWith('https') ? 'https' : 'http'};package=idm.internet.download.manager;S.browser_fallback_url=${encodeURIComponent(dlLink)};end`; }
     function executeDirect() { let dlLink = currentActiveEpisodeLink || currentActiveMovie.dl; if(!dlLink) { alert("Download link not available!"); return; } window.open(dlLink, '_blank'); }
     function saveToDownloads() { if(!currentActiveMovie) return; let dls = JSON.parse(localStorage.getItem('novaflix_dls')) || []; if(!dls.some(m => m.title === currentActiveMovie.title)) { dls.unshift(currentActiveMovie); localStorage.setItem('novaflix_dls', JSON.stringify(dls)); loadDownloads(); } }
-    function loadDownloads() { const grid = document.getElementById('downloads-grid'); grid.innerHTML = ''; let dls = JSON.parse(localStorage.getItem('novaflix_dls')) || []; if(dls.length === 0) return grid.innerHTML = '<div class="col-span-full text-center text-gray-500 text-xs py-4">No downloaded movies history.</div>'; dls.forEach((m, i) => { grid.innerHTML += `<div class="movie-card"><div class="absolute top-1 right-1 bg-black/80 rounded-full w-6 h-6 flex justify-center items-center z-20 shadow cursor-pointer text-red-500" onclick="removeDownload(${i})"><i class="fa-solid fa-trash text-[10px]"></i></div><img src="${m.poster}" class="w-full aspect-[2/3] object-cover opacity-90" onclick='openMovieDetail(${JSON.stringify(m).replace(/'/g, "&apos;")})'><div class="absolute bottom-0 w-full bg-black/80 text-[9px] text-white p-1 text-center truncate font-semibold">${m.title}</div></div>`; }); }
+    
+    function loadDownloads() { 
+        const grid = document.getElementById('downloads-grid'); 
+        grid.innerHTML = ''; 
+        let dls = JSON.parse(localStorage.getItem('novaflix_dls')) || []; 
+        
+        if(dls.length === 0) {
+            grid.innerHTML = '<div class="col-span-full text-center text-gray-500 text-xs py-4">Aapne abhi tak koi movie download nahi ki hai.</div>';
+            return;
+        }
+        
+        dls.forEach((m, index) => { 
+            grid.innerHTML += `<div class="movie-card"><div class="absolute top-1 right-1 bg-black/80 rounded-full w-6 h-6 flex justify-center items-center z-20 shadow cursor-pointer text-red-500" onclick="removeDownload(${index})"><i class="fa-solid fa-trash text-[10px]"></i></div><img src="${m.poster}" class="w-full aspect-[2/3] object-cover opacity-90" onclick='openMovieDetail(${JSON.stringify(m).replace(/'/g, "&apos;")})'><div class="absolute bottom-0 w-full bg-black/80 text-[9px] text-white p-1 text-center truncate font-semibold">${m.title}</div></div>`; 
+            
+            // Add grid in-feed ads (Every 3 movies) in downloads history
+            if ((index + 1) % 3 === 0 && (index + 1) !== dls.length) {
+                grid.innerHTML += `<div class="col-span-full ad-container-auto ad-banner my-2 w-full shadow-lg">Download Grid In-Feed Ad</div>`;
+            }
+        }); 
+    }
+    
     function removeDownload(index) { if(confirm("Delete this history log?")) { let dls = JSON.parse(localStorage.getItem('novaflix_dls')) || []; dls.splice(index, 1); localStorage.setItem('novaflix_dls', JSON.stringify(dls)); loadDownloads(); } }
     function submitRequest() { const name = document.getElementById('req-movie-name').value; if(!name) return alert("Please enter a movie name"); db.ref('requests').push({ name: name, date: new Date().toISOString() }).then(() => { alert("Request submitted successfully!"); document.getElementById('req-movie-name').value = ''; closeModal('request-modal'); }); }
     function deleteRequest(id) { if(confirm('Mark as done & delete?')) db.ref('requests/' + id).remove(); }
@@ -686,3 +751,9 @@
 </script>
 </body>
 </html>
+"""
+
+with open('novaflix_updated_ads.html', 'w', encoding='utf-8') as f:
+    f.write(html_code)
+
+print("HTML file with updated ad placements generated.")
