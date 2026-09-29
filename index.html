@@ -288,17 +288,23 @@
     </div>
 </div>
 
-<!-- 💰 FULL SCREEN AD MODAL -->
-<div id="fullscreen-ad-modal" class="modal-overlay" style="background: #000; z-index: 999999;">
+<!-- 💰 NEW 45-SEC FULL SCREEN AD MODAL (UPDATED) -->
+<div id="fullscreen-ad-modal" class="modal-overlay" style="background: rgba(0,0,0,0.98); z-index: 999999;">
     <div class="w-full h-full flex flex-col justify-center items-center relative">
-        <div class="absolute top-4 right-4 flex gap-2 items-center">
-            <span id="ad-skip-timer" class="bg-black/50 text-white px-3 py-1 rounded text-xs font-bold border border-gray-600">Skip in 15s</span>
-            <button id="ad-skip-btn" onclick="closeFullScreenAd()" class="hidden bg-netflixRed text-white px-3 py-1 rounded text-xs font-bold"><i class="fa-solid fa-xmark mr-1"></i> Close Ad</button>
-        </div>
-        <div class="text-gray-500 mb-4 text-xs font-bold uppercase tracking-widest">Advertisement</div>
         
-        <!-- 💰 MODAL AD (300x250) -->
-        <div class="w-11/12 max-w-md h-auto bg-[#1a1d24] border border-gray-700 flex justify-center items-center rounded-lg shadow-[0_0_20px_rgba(255,255,255,0.1)] p-2">
+        <!-- 45 Second Custom Timer Text -->
+        <div class="absolute top-10 w-full text-center px-4" id="ad-skip-timer-text">
+            <p class="text-white font-bold text-lg mb-1">Your movie will play in: <span id="ad-skip-timer-count" class="text-netflixRed text-2xl font-black">45</span> seconds</p>
+            <div class="text-gray-500 text-[10px] font-bold uppercase tracking-widest mt-1">Please wait for the content to load</div>
+        </div>
+        
+        <!-- Hidden Close Button (Appears at 0) -->
+        <div class="absolute top-4 right-4 flex gap-2 items-center">
+            <button id="ad-skip-btn" onclick="closeFullScreenAd()" class="hidden bg-netflixRed text-white px-4 py-2 rounded text-sm font-bold shadow-[0_0_15px_rgba(229,9,20,0.5)] active:scale-95 transition-transform"><i class="fa-solid fa-xmark mr-1"></i> Play Movie</button>
+        </div>
+        
+        <!-- 💰 MODAL AD (300x250) - Same as before -->
+        <div class="w-11/12 max-w-md h-auto bg-[#1a1d24] border border-gray-700 flex justify-center items-center rounded-lg shadow-[0_0_30px_rgba(255,255,255,0.1)] p-2 mt-8">
             <script type="text/javascript">
                 atOptions = {
                     'key' : '70529edcf380574be4f66f1169017412',
@@ -462,6 +468,12 @@
                     <input type="text" id="m-lang" placeholder="Language" class="bg-black p-2 rounded text-xs text-white border border-gray-700">
                     <input type="text" id="m-quality" placeholder="Quality" class="bg-black p-2 rounded text-xs text-white border border-gray-700">
                     
+                    <!-- 🔥 NEW: Slider Expiry Date Field -->
+                    <div class="sm:col-span-2 flex items-center gap-2 bg-[#2b201a] p-3 rounded border border-gray-700 my-1">
+                        <label class="text-xs font-bold text-gray-400 w-1/3">Slider Expiry Date:</label>
+                        <input type="date" id="m-slider-expiry" title="If set, movie will auto-remove from Slider after this date" class="w-2/3 bg-black p-2 rounded text-xs text-white border border-gray-700">
+                    </div>
+
                     <div class="sm:col-span-2 flex items-center gap-2 bg-[#2b201a] p-3 rounded border border-[#6b3a20] my-2">
                         <input type="checkbox" id="m-is-series" class="w-5 h-5 accent-netflixRed" onchange="toggleSeriesMode()">
                         <label class="text-sm font-bold text-yellow-500">Is this a Web Series (Multiple Parts)?</label>
@@ -640,7 +652,7 @@
                     let typeBadge = m.isSeries ? `<span class="bg-yellow-600 text-white text-[8px] px-1 rounded ml-1">Series</span>` : '';
                     adminList.innerHTML += `<div class="bg-black p-2 rounded flex justify-between items-center text-[10px] border border-gray-800"><span class="truncate w-2/3 text-gray-300">${m.title} ${typeBadge}</span><div class="flex gap-2"><i class="fa-solid fa-pen-to-square text-blue-500 cursor-pointer p-1" onclick="editMovie('${c.key}')"></i><i class="fa-solid fa-trash text-red-500 cursor-pointer p-1" onclick="deleteMovie('${c.key}')"></i></div></div>`; 
                 });
-                allMoviesArray.reverse(); renderSlider(allMoviesArray.slice(0, 5)); renderGridWithAds(allMoviesArray, 'movies-grid');
+                allMoviesArray.reverse(); renderSlider(allMoviesArray); renderGridWithAds(allMoviesArray, 'movies-grid');
             }
         });
     }
@@ -662,10 +674,26 @@
     let sliderInterval;
     function renderSlider(movies) {
         const slider = document.getElementById('top-slider'); slider.innerHTML = '';
-        movies.forEach(m => { 
+        
+        // 🔥 NAYA FEATURE: Slider Expiry Logic Check
+        let today = new Date().toISOString().split('T')[0];
+        let sliderMovies = movies.filter(m => !m.sliderExpiry || m.sliderExpiry >= today).slice(0, 10); // Slider mein sirf valid movies rahengi
+
+        let displayCount = 0;
+        sliderMovies.forEach((m, index) => { 
             let newBadge = m.isNew ? `<div class="absolute top-2 right-2 bg-netflixRed text-white text-[9px] px-2 py-1 rounded font-bold shadow-lg z-10">NEW</div>` : '';
             slider.innerHTML += `<div class="slider-item" onclick='openMovieDetail(${JSON.stringify(m).replace(/'/g, "&apos;")})'>${newBadge}<img src="${m.banner || m.poster}" class="w-full h-40 sm:h-48 object-cover opacity-90"><div class="absolute bottom-0 w-full bg-gradient-to-t from-black to-transparent p-2 pb-3 text-white font-black text-sm">${m.title}</div></div>`; 
+            displayCount++;
+
+            // 🔥 NAYA FEATURE: Har 3 movie ke baad Slider mein Banner Ad aayega 
+            if (displayCount % 3 === 0 && displayCount !== sliderMovies.length) {
+                slider.innerHTML += `
+                <div class="slider-item bg-[#1a1d24] flex items-center justify-center border border-gray-700 cursor-pointer" onclick="window.open('https://www.profitableratecpmnetwork.com/c946hyefut?key=1bc48e7a796f76d9d2995279f10f3c8c', '_blank')">
+                     <div class="flex flex-col items-center p-4 text-center"><i class="fa-solid fa-gift text-yellow-500 text-3xl mb-2 animate-pulse"></i><span class="text-sm font-bold text-gray-300">Click Here To Unlock Premium Quality</span><span class="text-[9px] text-gray-500 mt-2 bg-black px-2 py-1 rounded">Advertisement</span></div>
+                </div>`;
+            }
         });
+        
         clearInterval(sliderInterval);
         sliderInterval = setInterval(() => { if(slider.scrollWidth <= slider.clientWidth) return; if(slider.scrollLeft + slider.clientWidth >= (slider.scrollWidth - 10)) { slider.scrollTo({left: 0, behavior: 'smooth'}); } else { slider.scrollBy({left: slider.clientWidth, behavior: 'smooth'}); } }, 3500);
     }
@@ -707,20 +735,49 @@
         adIntervalTimer = setInterval(() => {
             if(!isAdPlaying) return; 
             adTimeLeft--;
-            if(currentAdAction === 'download') { document.getElementById('countdown-timer').innerText = adTimeLeft; } else { document.getElementById('ad-skip-timer').innerText = `Skip in ${adTimeLeft}s`; }
+            
+            if(currentAdAction === 'download') { 
+                document.getElementById('countdown-timer').innerText = adTimeLeft; 
+            } else { 
+                // 🔥 UPDATE: Har second me Countdown ka number update hota rahega
+                document.getElementById('ad-skip-timer-count').innerText = adTimeLeft; 
+            }
+            
             if (adTimeLeft <= 0) {
                 clearInterval(adIntervalTimer); isAdPlaying = false;
                 db.ref('analytics/ads_watched').set(firebase.database.ServerValue.increment(1));
-                if(currentAdAction === 'download') { document.getElementById('countdown-timer').classList.add('hidden'); document.getElementById('final-dl-buttons').classList.remove('hidden'); saveToDownloads(); } else { document.getElementById('ad-skip-timer').classList.add('hidden'); document.getElementById('ad-skip-btn').classList.remove('hidden'); }
+                
+                if(currentAdAction === 'download') { 
+                    document.getElementById('countdown-timer').classList.add('hidden'); 
+                    document.getElementById('final-dl-buttons').classList.remove('hidden'); 
+                    saveToDownloads(); 
+                } else { 
+                    // 🔥 UPDATE: 0 par aane ke baad Timer text hata kar 'Play Movie' wala X button dikhayenge
+                    document.getElementById('ad-skip-timer-text').classList.add('hidden'); 
+                    document.getElementById('ad-skip-btn').classList.remove('hidden'); 
+                }
             }
         }, 1000);
     }
 
     let adCallback = null;
+    
+    // 🔥 NAYA FEATURE: 45 SECONDS INTERSTITIAL FULL-SCREEN LOGIC
     function showFullScreenAd(callback) {
         if(document.body.classList.contains('admin-mode')) { if(callback) callback(); return; }
-        adCallback = callback; document.getElementById('fullscreen-ad-modal').classList.add('active'); document.getElementById('ad-skip-btn').classList.add('hidden'); document.getElementById('ad-skip-timer').classList.remove('hidden');
-        adTimeLeft = 15; currentAdAction = 'welcome'; isAdPlaying = true; document.getElementById('ad-skip-timer').innerText = `Skip in ${adTimeLeft}s`; executeTimerLogic();
+        adCallback = callback; 
+        
+        document.getElementById('fullscreen-ad-modal').classList.add('active'); 
+        
+        // Shuru mein X button hide aur Timer Text show
+        document.getElementById('ad-skip-btn').classList.add('hidden'); 
+        document.getElementById('ad-skip-timer-text').classList.remove('hidden'); 
+        
+        adTimeLeft = 45; // 🔥 Yahan 45 second set kiya hai
+        currentAdAction = 'welcome'; 
+        isAdPlaying = true; 
+        document.getElementById('ad-skip-timer-count').innerText = adTimeLeft; 
+        executeTimerLogic();
     }
 
     function closeFullScreenAd() { clearInterval(adIntervalTimer); isAdPlaying = false; document.getElementById('fullscreen-ad-modal').classList.remove('active'); if (adCallback) { adCallback(); adCallback = null; } }
@@ -855,18 +912,53 @@
     let adminEpisodesArr = [];
     function toggleSeriesMode() { const isSeries = document.getElementById('m-is-series').checked; if(isSeries) { document.getElementById('single-movie-inputs').classList.add('hidden'); document.getElementById('series-movie-inputs').classList.remove('hidden'); if(adminEpisodesArr.length === 0) addAdminEpisodeField(); } else { document.getElementById('single-movie-inputs').classList.remove('hidden'); document.getElementById('series-movie-inputs').classList.add('hidden'); } }
     function addAdminEpisodeField(name='', stream='', dl='') { const id = Date.now(); const container = document.getElementById('episodes-admin-list'); const div = document.createElement('div'); div.className = "flex gap-2 items-center ep-entry"; div.id = `ep-${id}`; div.innerHTML = `<input type="text" placeholder="Ep Name (e.g. Ep 1)" value="${name}" class="ep-name w-1/4 bg-gray-900 p-1 rounded text-[10px] text-white border border-gray-600"><input type="text" placeholder="Stream URL" value="${stream}" class="ep-stream w-2/4 bg-gray-900 p-1 rounded text-[10px] text-white border border-gray-600"><input type="text" placeholder="Download Link" value="${dl}" class="ep-dl w-1/4 bg-gray-900 p-1 rounded text-[10px] text-white border border-gray-600"><i class="fa-solid fa-xmark text-red-500 cursor-pointer p-1" onclick="document.getElementById('ep-${id}').remove()"></i>`; container.appendChild(div); }
-    function editMovie(id) { let m = allMoviesArray.find(x => x.id === id); if(m) { document.getElementById('m-id').value = m.id; document.getElementById('m-title').value = m.title; document.getElementById('m-poster').value = m.poster || ''; document.getElementById('m-banner').value = m.banner || ''; document.getElementById('m-cat-select').value = m.cat; document.getElementById('m-lang').value = m.language || 'Hindi'; document.getElementById('m-quality').value = m.quality || '1080p HD'; document.getElementById('m-new').checked = m.isNew || false; document.getElementById('m-is-series').checked = m.isSeries || false; if(m.isSeries) { document.getElementById('episodes-admin-list').innerHTML = ''; if(m.episodes) m.episodes.forEach(ep => addAdminEpisodeField(ep.name, ep.stream, ep.dl)); } else { document.getElementById('m-stream').value = m.stream || ''; document.getElementById('m-dl').value = m.dl || ''; } toggleSeriesMode(); document.getElementById('save-movie-btn').innerText = "Update Content"; } }
+    
+    function editMovie(id) { 
+        let m = allMoviesArray.find(x => x.id === id); 
+        if(m) { 
+            document.getElementById('m-id').value = m.id; 
+            document.getElementById('m-title').value = m.title; 
+            document.getElementById('m-poster').value = m.poster || ''; 
+            document.getElementById('m-banner').value = m.banner || ''; 
+            document.getElementById('m-cat-select').value = m.cat; 
+            document.getElementById('m-lang').value = m.language || 'Hindi'; 
+            document.getElementById('m-quality').value = m.quality || '1080p HD'; 
+            document.getElementById('m-new').checked = m.isNew || false; 
+            document.getElementById('m-slider-expiry').value = m.sliderExpiry || ''; // 🔥 LOAD Expiry Date
+            document.getElementById('m-is-series').checked = m.isSeries || false; 
+            if(m.isSeries) { document.getElementById('episodes-admin-list').innerHTML = ''; if(m.episodes) m.episodes.forEach(ep => addAdminEpisodeField(ep.name, ep.stream, ep.dl)); } else { document.getElementById('m-stream').value = m.stream || ''; document.getElementById('m-dl').value = m.dl || ''; } toggleSeriesMode(); document.getElementById('save-movie-btn').innerText = "Update Content"; 
+        } 
+    }
+    
     function formatStreamURL(url) { if (!url) return ''; let videoId = ''; if (url.includes('youtu.be/')) { videoId = url.split('youtu.be/')[1].split('?')[0]; } else if (url.includes('youtube.com/watch')) { videoId = new URLSearchParams(new URL(url).search).get('v'); } else if (url.includes('youtube.com/shorts/')) { videoId = url.split('youtube.com/shorts/')[1].split('?')[0]; } if (videoId) return `https://www.youtube.com/embed/${videoId}`; return url; }
     
     function saveMovie() { 
         const id = document.getElementById('m-id').value; const isSeries = document.getElementById('m-is-series').checked;
-        const data = { title: document.getElementById('m-title').value, poster: document.getElementById('m-poster').value, banner: document.getElementById('m-banner').value, cat: document.getElementById('m-cat-select').value, language: document.getElementById('m-lang').value || 'Hindi', quality: document.getElementById('m-quality').value || '1080p HD', isNew: document.getElementById('m-new').checked, isSeries: isSeries }; 
+        const data = { 
+            title: document.getElementById('m-title').value, 
+            poster: document.getElementById('m-poster').value, 
+            banner: document.getElementById('m-banner').value, 
+            cat: document.getElementById('m-cat-select').value, 
+            language: document.getElementById('m-lang').value || 'Hindi', 
+            quality: document.getElementById('m-quality').value || '1080p HD', 
+            isNew: document.getElementById('m-new').checked, 
+            sliderExpiry: document.getElementById('m-slider-expiry').value, // 🔥 SAVE Expiry Date
+            isSeries: isSeries 
+        }; 
         if(!data.title || !data.cat) return alert('Title and Category are required!'); 
         if(isSeries) { let eps = []; document.querySelectorAll('.ep-entry').forEach(el => { let name = el.querySelector('.ep-name').value; let stream = formatStreamURL(el.querySelector('.ep-stream').value); let dl = el.querySelector('.ep-dl').value; if(name && stream) eps.push({ name, stream, dl }); }); if(eps.length === 0) return alert('Add at least one episode with name and stream URL!'); data.episodes = eps; data.stream = eps[0].stream; } else { let stream = formatStreamURL(document.getElementById('m-stream').value); if(!stream) return alert('Stream URL is required!'); data.stream = stream; data.dl = document.getElementById('m-dl').value; }
         if(id) { db.ref('movies/' + id).update(data).then(() => { alert('Content Updated!'); resetAdminForm(); }); } else { db.ref('movies').push(data).then(() => { alert('Content Published!'); resetAdminForm(); }); } 
     }
     
-    function resetAdminForm() { document.getElementById('m-id').value = ''; document.querySelectorAll('#admin-dash-modal input[type="text"]').forEach(i=>i.value=''); document.getElementById('m-new').checked = false; document.getElementById('m-is-series').checked = false; document.getElementById('episodes-admin-list').innerHTML = ''; toggleSeriesMode(); document.getElementById('save-movie-btn').innerText = "Publish Content"; }
+    function resetAdminForm() { 
+        document.getElementById('m-id').value = ''; 
+        document.querySelectorAll('#admin-dash-modal input[type="text"]').forEach(i=>i.value=''); 
+        document.getElementById('m-slider-expiry').value = ''; // 🔥 CLEAR Expiry Field
+        document.getElementById('m-new').checked = false; 
+        document.getElementById('m-is-series').checked = false; 
+        document.getElementById('episodes-admin-list').innerHTML = ''; 
+        toggleSeriesMode(); document.getElementById('save-movie-btn').innerText = "Publish Content"; 
+    }
     function deleteMovie(id) { if(confirm('Delete this Content?')) db.ref('movies/' + id).remove(); }
 </script>
 </body>
