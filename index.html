@@ -61,7 +61,7 @@
         /* 🔥 AUTO ADJUSTING AD CONTAINER */
         .ad-container-auto {
             width: 100%; display: flex; justify-content: center; align-items: center; 
-            overflow: hidden; background-color: transparent; margin: 10px 0;
+            overflow: hidden; background-color: transparent; margin: 10px 0; min-height: 50px;
         }
 
         .icon-btn { display: flex; flex-direction: column; align-items: center; justify-content: center; color: #aaa; gap: 6px; font-size: 14px; cursor: pointer; text-align: center; width: 60px; }
@@ -75,6 +75,10 @@
 
         /* Admin Mode Security: Hide Ads */
         body.admin-mode .ad-container-auto, body.admin-mode #social-bar-container { display: none !important; }
+        
+        /* Loading animation for ads */
+        .ad-loading { background: #1a1d24; animation: pulse 1.5s infinite; border-radius: 4px; display: flex; justify-content: center; align-items: center; color: #555; font-size: 10px; }
+        @keyframes pulse { 0% { opacity: 0.6; } 50% { opacity: 1; } 100% { opacity: 0.6; } }
     </style>
 </head>
 <body oncontextmenu="return false;">
@@ -111,18 +115,7 @@
         <div class="slider-container hide-scroll px-3 w-full" id="top-slider"></div>
 
         <!-- 💰 HOME SCREEN 320x50 AD -->
-        <div class="ad-container-auto mx-3 mt-2 mb-4 w-auto shadow-lg">
-            <script type="text/javascript">
-                atOptions = {
-                    'key' : '5919d5a8a26c28e4a3df2b75d2fafb8e',
-                    'format' : 'iframe',
-                    'height' : 50,
-                    'width' : 320,
-                    'params' : {}
-                };
-            </script>
-            <script type="text/javascript" src="https://www.highrevenueformat.com/5919d5a8a26c28e4a3df2b75d2fafb8e/invoke.js"></script>
-        </div>
+        <div class="ad-container-auto mx-3 mt-2 mb-4 w-auto shadow-lg" id="home-top-ad"></div>
 
         <div class="p-3 w-full">
             <h2 class="text-sm font-bold text-white mb-3 border-l-2 border-netflixRed pl-2" id="grid-title">Trending Now</h2>
@@ -135,26 +128,12 @@
         <h2 class="text-lg font-bold text-white mb-2 border-l-2 border-blue-500 pl-2">My Downloads History</h2>
         
         <!-- 💰 DOWNLOAD HISTORY TOP AD (300x250) -->
-        <div class="ad-container-auto mb-4 shadow-lg" id="dl-top-ad">
-            <script type="text/javascript">
-                atOptions = {
-                    'key' : '70529edcf380574be4f66f1169017412',
-                    'format' : 'iframe',
-                    'height' : 250,
-                    'width' : 300,
-                    'params' : {}
-                };
-            </script>
-            <script type="text/javascript" src="https://www.highrevenueformat.com/70529edcf380574be4f66f1169017412/invoke.js"></script>
-        </div>
+        <div class="ad-container-auto mb-4 shadow-lg flex justify-center" id="dl-top-ad"></div>
         
         <div class="grid grid-cols-3 sm:grid-cols-4 gap-2 w-full" id="downloads-grid"></div>
         
         <!-- 💰 DOWNLOAD HISTORY BOTTOM AD (NATIVE BANNER) -->
-        <div class="ad-container-auto mt-4 shadow-lg" id="dl-bottom-ad">
-            <script async="async" data-cfasync="false" src="https://pl31549832.profitableratecpmnetwork.com/ea6e287b08185a5139650d189e45ac9a/invoke.js"></script>
-            <div id="container-ea6e287b08185a5139650d189e45ac9a"></div>
-        </div>
+        <div class="ad-container-auto mt-4 shadow-lg flex justify-center" id="dl-bottom-ad"></div>
     </div>
 
     <!-- 🔍 SEARCH -->
@@ -165,18 +144,7 @@
         </div>
         
         <!-- 💰 SEARCH BAR BOTTOM AD (300x250) -->
-        <div class="ad-container-auto mb-4 shadow-lg" id="search-top-ad">
-            <script type="text/javascript">
-                atOptions = {
-                    'key' : '70529edcf380574be4f66f1169017412',
-                    'format' : 'iframe',
-                    'height' : 250,
-                    'width' : 300,
-                    'params' : {}
-                };
-            </script>
-            <script type="text/javascript" src="https://www.highrevenueformat.com/70529edcf380574be4f66f1169017412/invoke.js"></script>
-        </div>
+        <div class="ad-container-auto mb-4 shadow-lg flex justify-center" id="search-top-ad"></div>
         
         <div id="search-results" class="grid grid-cols-3 sm:grid-cols-4 gap-2 w-full"></div>
     </div>
@@ -216,18 +184,7 @@
         </button>
 
         <!-- 💰 IN-STREAM AD (320x50) -->
-        <div class="ad-container-auto mt-4">
-            <script type="text/javascript">
-                atOptions = {
-                    'key' : '5919d5a8a26c28e4a3df2b75d2fafb8e',
-                    'format' : 'iframe',
-                    'height' : 50,
-                    'width' : 320,
-                    'params' : {}
-                };
-            </script>
-            <script type="text/javascript" src="https://www.highrevenueformat.com/5919d5a8a26c28e4a3df2b75d2fafb8e/invoke.js"></script>
-        </div>
+        <div class="ad-container-auto mt-4" id="detail-instream-ad"></div>
 
         <div class="flex justify-around items-center mt-4 border-t border-b border-gray-800 py-3 w-full">
             <div class="icon-btn" onclick="toggleLike()" id="btn-like">
@@ -245,18 +202,7 @@
         </div>
 
         <!-- 💰 SPONSORED AD (320x50) -->
-        <div class="ad-container-auto mt-4">
-            <script type="text/javascript">
-                atOptions = {
-                    'key' : '5919d5a8a26c28e4a3df2b75d2fafb8e',
-                    'format' : 'iframe',
-                    'height' : 50,
-                    'width' : 320,
-                    'params' : {}
-                };
-            </script>
-            <script type="text/javascript" src="https://www.highrevenueformat.com/5919d5a8a26c28e4a3df2b75d2fafb8e/invoke.js"></script>
-        </div>
+        <div class="ad-container-auto mt-4" id="detail-sponsored-ad"></div>
 
         <h2 class="text-sm font-bold text-white mt-6 border-l-2 border-netflixRed pl-2 mb-2">Recommended for You</h2>
         <div class="slider-container hide-scroll w-full" id="recommended-slider"></div>
@@ -288,51 +234,24 @@
     </div>
 </div>
 
-<!-- 🔥 FULL SCREEN SANDWICH AD MODAL (45s Timer + Smartlinks + Banner) -->
-<div id="fullscreen-ad-modal" class="modal-overlay" style="background: rgba(0,0,0,0.98); z-index: 999999;">
-    <div class="w-full h-full flex flex-col justify-center items-center relative p-4">
+<!-- 🔥 DYNAMIC 45s AD MODAL (Welcome vs Download Logic) -->
+<div id="fullscreen-ad-modal" class="modal-overlay" style="background: rgba(0,0,0,0.98); z-index: 999999; overflow-y: auto;">
+    <div class="w-full min-h-full flex flex-col items-center py-6 px-4 relative">
         
         <!-- 45 Second Timer Text (Top) -->
-        <div class="absolute top-6 w-full text-center px-4" id="ad-skip-timer-text">
-            <p class="text-white font-bold text-lg mb-1">Please wait: <span id="ad-skip-timer-count" class="text-netflixRed text-2xl font-black">45</span>s</p>
-            <div class="text-gray-500 text-[10px] font-bold uppercase tracking-widest mt-1">Generating Secure Link</div>
+        <div class="w-full text-center mb-4" id="ad-skip-timer-text">
+            <p class="text-white font-bold text-lg mb-1" id="ad-timer-main-msg">Please wait: <span id="ad-skip-timer-count" class="text-netflixRed text-2xl font-black">45</span>s</p>
+            <div class="text-gray-500 text-[10px] font-bold uppercase tracking-widest mt-1" id="ad-timer-sub-msg">Generating Secure Link</div>
         </div>
         
-        <!-- Hidden Close/Play Button (Appears at 0 at the top right) - Text Changed to "Skip Ad" -->
+        <!-- Hidden Close/Skip Button (Appears at 0 at top right) -->
         <div class="absolute top-4 right-4 flex gap-2 items-center z-50">
             <button id="ad-skip-btn" onclick="closeFullScreenAd()" class="hidden bg-netflixRed text-white px-4 py-2 rounded text-sm font-bold shadow-[0_0_15px_rgba(229,9,20,0.5)] active:scale-95 transition-transform">Skip Ad <i class="fa-solid fa-forward-step ml-1"></i></button>
         </div>
         
-        <!-- THE SANDWICH CONTENT BOX -->
-        <div class="w-full max-w-md flex flex-col gap-5 mt-10">
-            
-            <!-- TOP SMARTLINK BUTTON -->
-            <button onclick="window.open('https://www.profitableratecpmnetwork.com/c946hyefut?key=1bc48e7a796f76d9d2995279f10f3c8c', '_blank')" class="w-full bg-gradient-to-r from-blue-700 to-blue-500 text-white font-black py-4 rounded-xl shadow-[0_0_20px_rgba(37,99,235,0.4)] animate-pulse flex flex-col items-center">
-                <span class="text-lg">SERVER 1: HD QUALITY</span>
-                <span class="text-[10px] font-normal text-blue-100 mt-1">Click here to verify and speed up</span>
-            </button>
-            
-            <!-- CENTER BANNER AD (Original 300x250) -->
-            <div class="w-full flex justify-center bg-[#1a1d24] border border-gray-700 rounded-lg shadow-lg p-2 relative">
-                <span class="absolute -top-3 bg-black px-2 text-[8px] text-gray-500 rounded-full border border-gray-700">Advertisement</span>
-                <script type="text/javascript">
-                    atOptions = {
-                        'key' : '70529edcf380574be4f66f1169017412',
-                        'format' : 'iframe',
-                        'height' : 250,
-                        'width' : 300,
-                        'params' : {}
-                    };
-                </script>
-                <script type="text/javascript" src="https://www.highrevenueformat.com/70529edcf380574be4f66f1169017412/invoke.js"></script>
-            </div>
-            
-            <!-- BOTTOM SMARTLINK BUTTON -->
-            <button onclick="window.open('https://www.profitableratecpmnetwork.com/c946hyefut?key=1bc48e7a796f76d9d2995279f10f3c8c', '_blank')" class="w-full bg-gradient-to-r from-green-700 to-green-500 text-white font-black py-4 rounded-xl shadow-[0_0_20px_rgba(22,163,74,0.4)] flex flex-col items-center">
-                <span class="text-lg">SERVER 2: FAST STREAM</span>
-                <span class="text-[10px] font-normal text-green-100 mt-1">No buffering (Recommended)</span>
-            </button>
-            
+        <!-- DYNAMIC AD CONTAINER -->
+        <div id="dynamic-ad-stack" class="w-full max-w-md flex flex-col items-center gap-4 mt-2">
+            <!-- Ads will be injected here via JS based on condition -->
         </div>
     </div>
 </div>
@@ -353,40 +272,18 @@
         <button onclick="closeModal('request-modal')" class="absolute top-2 right-2 text-gray-400 p-2"><i class="fa-solid fa-xmark"></i></button>
         
         <!-- 💰 REQUEST TOP AD (320x50) -->
-        <div class="ad-container-auto mb-4 w-full">
-            <script type="text/javascript">
-                atOptions = {
-                    'key' : '5919d5a8a26c28e4a3df2b75d2fafb8e',
-                    'format' : 'iframe',
-                    'height' : 50,
-                    'width' : 320,
-                    'params' : {}
-                };
-            </script>
-            <script type="text/javascript" src="https://www.highrevenueformat.com/5919d5a8a26c28e4a3df2b75d2fafb8e/invoke.js"></script>
-        </div>
+        <div class="ad-container-auto mb-4 w-full" id="req-top-ad"></div>
 
         <h2 class="text-lg font-bold text-white mb-4 text-center">Request a Movie</h2>
         <input type="text" id="req-movie-name" placeholder="Enter Movie Name" class="bg-black p-3 rounded mb-3 text-sm text-white border border-gray-700">
         <button onclick="submitRequest()" class="w-full bg-netflixRed text-white font-bold py-3 rounded text-sm">Submit Request</button>
 
         <!-- 💰 REQUEST BOTTOM AD (300x250) -->
-        <div class="ad-container-auto mt-4 w-full">
-            <script type="text/javascript">
-                atOptions = {
-                    'key' : '70529edcf380574be4f66f1169017412',
-                    'format' : 'iframe',
-                    'height' : 250,
-                    'width' : 300,
-                    'params' : {}
-                };
-            </script>
-            <script type="text/javascript" src="https://www.highrevenueformat.com/70529edcf380574be4f66f1169017412/invoke.js"></script>
-        </div>
+        <div class="ad-container-auto mt-4 w-full flex justify-center" id="req-bottom-ad"></div>
     </div>
 </div>
 
-<!-- ⚙️️ DOWNLOAD FLOW MODALS -->
+<!-- ⚙ DOWNLOAD FLOW MODALS -->
 <div id="quality-modal" class="modal-overlay">
     <div class="bg-[#1a1d24] p-5 rounded w-11/12 max-w-sm text-center border border-gray-700">
         <h3 class="text-lg font-bold mb-4 text-white">Select Quality</h3>
@@ -400,23 +297,12 @@
 
 <div id="ad-timer-modal" class="modal-overlay" style="background: rgba(0,0,0,0.98);">
     <div class="text-center w-11/12 max-w-md p-4">
-        <h2 class="text-xl font-bold text-amazonBtn mb-2">Generating Link...</h2>
+        <h2 class="text-xl font-bold text-amazonBtn mb-2">Finalizing Request...</h2>
         
         <!-- 💰 DOWNLOAD TIMER AD (300x250) -->
-        <div class="w-full h-auto bg-[#141414] border border-gray-700 flex justify-center items-center mt-4 p-2">
-            <script type="text/javascript">
-                atOptions = {
-                    'key' : '70529edcf380574be4f66f1169017412',
-                    'format' : 'iframe',
-                    'height' : 250,
-                    'width' : 300,
-                    'params' : {}
-                };
-            </script>
-            <script type="text/javascript" src="https://www.highrevenueformat.com/70529edcf380574be4f66f1169017412/invoke.js"></script>
-        </div>
+        <div class="w-full flex justify-center mt-4 p-2" id="dl-timer-ad"></div>
 
-        <div class="text-5xl font-black text-white mb-6 mt-6" id="countdown-timer">30</div>
+        <div class="text-5xl font-black text-white mb-6 mt-6" id="countdown-timer">15</div>
         
         <div id="final-dl-buttons" class="hidden flex flex-col gap-3 w-full">
             <button onclick="execute1DM()" class="w-full bg-[#0088cc] text-white font-bold py-3 rounded text-sm shadow-[0_0_10px_rgba(0,136,204,0.4)]">
@@ -486,7 +372,6 @@
                     <input type="text" id="m-lang" placeholder="Language" class="bg-black p-2 rounded text-xs text-white border border-gray-700">
                     <input type="text" id="m-quality" placeholder="Quality" class="bg-black p-2 rounded text-xs text-white border border-gray-700">
                     
-                    <!-- 🔥 NEW: Slider Expiry Date Field -->
                     <div class="sm:col-span-2 flex items-center gap-2 bg-[#2b201a] p-3 rounded border border-gray-700 my-1">
                         <label class="text-xs font-bold text-gray-400 w-1/3">Slider Expiry Date:</label>
                         <input type="date" id="m-slider-expiry" title="If set, movie will auto-remove from Slider after this date" class="w-2/3 bg-black p-2 rounded text-xs text-white border border-gray-700">
@@ -546,11 +431,6 @@
     <div class="bot-nav flex flex-col items-center cursor-pointer w-1/4" onclick="switchScreen('screen-downloads', this)"><i class="fa-solid fa-download text-base mb-1"></i>Downloads</div>
 </div>
 
-<!-- 💰 SOCIAL BAR (POPUP AD) -->
-<div id="social-bar-container">
-    <script src="https://pl31549831.profitableratecpmnetwork.com/8b/0b/c0/8b0bc0c85eb7584aa571a6afe7ea708f.js"></script>
-</div>
-
 <script>
     document.addEventListener('contextmenu', event => event.preventDefault());
     document.onkeydown = function(e) { if(e.keyCode == 123 || (e.ctrlKey && e.shiftKey && (e.keyCode == 73 || e.keyCode == 74)) || (e.ctrlKey && e.keyCode == 85)) return false; };
@@ -559,6 +439,43 @@
         window.addEventListener('load', () => { navigator.serviceWorker.register('./sw.js').catch(err => console.log('SW setup error', err)); }); 
     }
     
+    // 🔥 SCRIPT INJECTION LOGIC (To load Adsterra scripts dynamically in containers)
+    function injectAd(containerId, adKey, adWidth, adHeight) {
+        if(document.body.classList.contains('admin-mode')) return;
+        const container = document.getElementById(containerId);
+        if(!container) return;
+        
+        container.innerHTML = ''; // Clear previous
+        const box = document.createElement('div');
+        box.className = `w-[${adWidth}px] h-[${adHeight}px] flex justify-center items-center bg-[#1a1d24] border border-gray-700 shadow-md relative overflow-hidden`;
+        box.innerHTML = `<span class="absolute -top-3 bg-black px-2 text-[8px] text-gray-500 rounded-full border border-gray-700 z-10">Ad</span><div class="ad-loading w-full h-full">Loading Ad...</div>`;
+        
+        const script1 = document.createElement('script');
+        script1.type = 'text/javascript';
+        script1.text = `atOptions = { 'key' : '${adKey}', 'format' : 'iframe', 'height' : ${adHeight}, 'width' : ${adWidth}, 'params' : {} };`;
+        
+        const script2 = document.createElement('script');
+        script2.type = 'text/javascript';
+        script2.src = `https://www.highrevenueformat.com/${adKey}/invoke.js`;
+        
+        box.appendChild(script1);
+        box.appendChild(script2);
+        container.appendChild(box);
+    }
+
+    // Function to initialize static ads across the site
+    function initStaticAds() {
+        injectAd('home-top-ad', '5919d5a8a26c28e4a3df2b75d2fafb8e', 320, 50);
+        injectAd('dl-top-ad', '70529edcf380574be4f66f1169017412', 300, 250);
+        injectAd('dl-bottom-ad', '70529edcf380574be4f66f1169017412', 300, 250);
+        injectAd('search-top-ad', '70529edcf380574be4f66f1169017412', 300, 250);
+        injectAd('detail-instream-ad', '5919d5a8a26c28e4a3df2b75d2fafb8e', 320, 50);
+        injectAd('detail-sponsored-ad', '5919d5a8a26c28e4a3df2b75d2fafb8e', 320, 50);
+        injectAd('req-top-ad', '5919d5a8a26c28e4a3df2b75d2fafb8e', 320, 50);
+        injectAd('req-bottom-ad', '70529edcf380574be4f66f1169017412', 300, 250);
+        injectAd('dl-timer-ad', '70529edcf380574be4f66f1169017412', 300, 250);
+    }
+
     let deferredPrompt;
     window.addEventListener('beforeinstallprompt', (e) => {
         e.preventDefault(); deferredPrompt = e;
@@ -593,8 +510,8 @@
     const db = firebase.database(); const auth = firebase.auth();
 
     window.onload = () => { 
-        loadData(); loadDownloads(); loadRequests(); trackVisitor();
-        if (!sessionStorage.getItem('novaflix_open_ad_shown')) { setTimeout(() => { showFullScreenAd(() => { console.log("Welcome"); }); sessionStorage.setItem('novaflix_open_ad_shown', 'true'); }, 3000); }
+        loadData(); loadDownloads(); loadRequests(); trackVisitor(); initStaticAds();
+        if (!sessionStorage.getItem('novaflix_open_ad_shown')) { setTimeout(() => { showFullScreenAd('welcome', () => { console.log("Welcome Finished"); }); sessionStorage.setItem('novaflix_open_ad_shown', 'true'); }, 3000); }
     };
 
     function trackVisitor() {
@@ -693,32 +610,25 @@
     function renderSlider(movies) {
         const slider = document.getElementById('top-slider'); slider.innerHTML = '';
         
-        // 🔥 NAYA FEATURE: Slider Expiry Logic Check
         let today = new Date().toISOString().split('T')[0];
         let sliderMovies = movies.filter(m => !m.sliderExpiry || m.sliderExpiry >= today).slice(0, 10);
 
-        let displayCount = 0;
+        let displayCount = 0; let adIndex = 0;
         sliderMovies.forEach((m, index) => { 
             let newBadge = m.isNew ? `<div class="absolute top-2 right-2 bg-netflixRed text-white text-[9px] px-2 py-1 rounded font-bold shadow-lg z-10">NEW</div>` : '';
             slider.innerHTML += `<div class="slider-item" onclick='openMovieDetail(${JSON.stringify(m).replace(/'/g, "&apos;")})'>${newBadge}<img src="${m.banner || m.poster}" class="w-full h-40 sm:h-48 object-cover opacity-90"><div class="absolute bottom-0 w-full bg-gradient-to-t from-black to-transparent p-2 pb-3 text-white font-black text-sm">${m.title}</div></div>`; 
             displayCount++;
 
-            // 🔥 UPDATE: Har 3 movie ke baad Slider mein Real Ad ayega
+            // 🔥 Har 3 movie ke baad Slider mein 320x50 Ad inject hoga
             if (displayCount % 3 === 0 && displayCount !== sliderMovies.length) {
+                adIndex++;
+                let adContainerId = `slider-ad-${adIndex}`;
                 slider.innerHTML += `
-                <div class="slider-item bg-transparent flex items-center justify-center relative overflow-hidden">
-                    <!-- 💰 REAL SLIDER AD (320x50 or 300x250 format based on your zone) -->
-                    <script type="text/javascript">
-                        atOptions = {
-                            'key' : '5919d5a8a26c28e4a3df2b75d2fafb8e',
-                            'format' : 'iframe',
-                            'height' : 50,
-                            'width' : 320,
-                            'params' : {}
-                        };
-                    <\/script>
-                    <script type="text/javascript" src="https://www.highrevenueformat.com/5919d5a8a26c28e4a3df2b75d2fafb8e/invoke.js"><\/script>
+                <div class="slider-item bg-[#1a1d24] flex items-center justify-center relative overflow-hidden border border-gray-700">
+                    <div id="${adContainerId}" class="w-full h-full flex justify-center items-center"></div>
                 </div>`;
+                // Injecting ad slightly later to ensure container is in DOM
+                setTimeout(() => injectAd(adContainerId, '5919d5a8a26c28e4a3df2b75d2fafb8e', 320, 50), 500);
             }
         });
         
@@ -730,14 +640,19 @@
         const grid = document.getElementById(containerId); grid.innerHTML = '';
         if(movies.length === 0) return grid.innerHTML = '<div class="col-span-full text-center text-gray-500 text-xs py-4">No movies found.</div>';
         
+        let gridAdIndex = 0;
         movies.forEach((m, index) => {
             let newBadge = m.isNew ? `<div class="absolute top-1 left-1 bg-netflixRed text-white text-[8px] px-1.5 py-0.5 rounded font-bold z-10 shadow">NEW</div>` : '';
             let catBadge = `<div class="absolute top-1 right-1 bg-black/80 border border-gray-600 text-gray-200 text-[8px] px-1.5 py-0.5 rounded font-bold z-10 shadow">${m.cat}</div>`;
             grid.innerHTML += `<div class="movie-card" onclick='openMovieDetail(${JSON.stringify(m).replace(/'/g, "&apos;")})'><div class="aspect-[2/3] w-full relative">${newBadge}${catBadge}<img src="${m.poster}" class="w-full h-full object-cover opacity-90"><div class="absolute bottom-0 w-full bg-black/80 text-[9px] text-white p-1 text-center truncate font-semibold">${m.title}</div></div></div>`;
             
-            // 🔥 DYNAMIC SMART LINK AD EVERY 6 MOVIES
-            if ((index + 1) % 6 === 0 && (index + 1) !== movies.length) {
-                grid.innerHTML += `<div class="col-span-full my-2 w-full shadow-lg rounded overflow-hidden cursor-pointer border border-gray-700" onclick="window.open('https://www.profitableratecpmnetwork.com/c946hyefut?key=1bc48e7a796f76d9d2995279f10f3c8c', '_blank')"><div class="w-full bg-[#1a1d24] flex items-center justify-center p-3 text-xs font-bold text-gray-400 gap-2"><i class="fa-solid fa-gift text-yellow-500"></i> Click Here To Unlock Premium Content</div></div>`;
+            // 🔥 NAYA FEATURE: Har 5 Movies ke baad 160x300 (Vertical) Ad Grid ke andar
+            if ((index + 1) % 5 === 0 && (index + 1) !== movies.length) {
+                gridAdIndex++;
+                let adContainerId = `grid-ad-${containerId}-${gridAdIndex}`;
+                // Using col-span-2 on small screens, col-span-1 on normal to fit the 160px width
+                grid.innerHTML += `<div class="movie-card col-span-2 sm:col-span-1 flex justify-center items-center bg-[#1a1d24] border border-gray-700" id="${adContainerId}"></div>`;
+                setTimeout(() => injectAd(adContainerId, '90eb57655a8ece26f771da3c6879371c', 160, 300), 500);
             }
         });
     }
@@ -764,10 +679,9 @@
             if(!isAdPlaying) return; 
             adTimeLeft--;
             
-            if(currentAdAction === 'download') { 
+            if(currentAdAction === 'download_timer') { 
                 document.getElementById('countdown-timer').innerText = adTimeLeft; 
             } else { 
-                // 🔥 Countdown Update for Full Screen
                 document.getElementById('ad-skip-timer-count').innerText = adTimeLeft; 
             }
             
@@ -775,12 +689,11 @@
                 clearInterval(adIntervalTimer); isAdPlaying = false;
                 db.ref('analytics/ads_watched').set(firebase.database.ServerValue.increment(1));
                 
-                if(currentAdAction === 'download') { 
+                if(currentAdAction === 'download_timer') { 
                     document.getElementById('countdown-timer').classList.add('hidden'); 
                     document.getElementById('final-dl-buttons').classList.remove('hidden'); 
                     saveToDownloads(); 
                 } else { 
-                    // 🔥 At 0, Show 'Skip Ad' Button
                     document.getElementById('ad-skip-timer-text').classList.add('hidden'); 
                     document.getElementById('ad-skip-btn').classList.remove('hidden'); 
                 }
@@ -790,8 +703,8 @@
 
     let adCallback = null;
     
-    // 🔥 NEW FULL SCREEN AD LOGIC (45 Seconds)
-    function showFullScreenAd(callback) {
+    // 🔥 DYNAMIC FULL SCREEN AD LOGIC (Welcome vs Download)
+    function showFullScreenAd(type, callback) {
         if(document.body.classList.contains('admin-mode')) { if(callback) callback(); return; }
         adCallback = callback; 
         
@@ -800,23 +713,66 @@
         document.getElementById('ad-skip-timer-text').classList.remove('hidden'); 
         
         adTimeLeft = 45; 
-        currentAdAction = 'welcome'; 
+        currentAdAction = type; 
         isAdPlaying = true; 
         document.getElementById('ad-skip-timer-count').innerText = adTimeLeft; 
+        
+        const stack = document.getElementById('dynamic-ad-stack');
+        stack.innerHTML = ''; // Clear previous
+        
+        if(type === 'welcome') {
+            document.getElementById('ad-timer-main-msg').innerHTML = `Welcome! Please wait: <span id="ad-skip-timer-count" class="text-netflixRed text-2xl font-black">45</span>s`;
+            document.getElementById('ad-timer-sub-msg').innerText = "Loading App Content...";
+            
+            // Welcome Stack: 320x50 -> 300x250 -> 320x50 -> 320x50 (NO BUTTONS)
+            stack.innerHTML = `
+                <div id="fs-ad-1" class="w-full flex justify-center"></div>
+                <div id="fs-ad-2" class="w-full flex justify-center my-2"></div>
+                <div id="fs-ad-3" class="w-full flex justify-center mb-2"></div>
+                <div id="fs-ad-4" class="w-full flex justify-center"></div>
+            `;
+            setTimeout(() => {
+                injectAd('fs-ad-1', '5919d5a8a26c28e4a3df2b75d2fafb8e', 320, 50);
+                injectAd('fs-ad-2', '70529edcf380574be4f66f1169017412', 300, 250);
+                injectAd('fs-ad-3', '5919d5a8a26c28e4a3df2b75d2fafb8e', 320, 50);
+                injectAd('fs-ad-4', '5919d5a8a26c28e4a3df2b75d2fafb8e', 320, 50);
+            }, 300);
+            
+        } else if (type === 'download') {
+            document.getElementById('ad-timer-main-msg').innerHTML = `Please wait: <span id="ad-skip-timer-count" class="text-netflixRed text-2xl font-black">45</span>s`;
+            document.getElementById('ad-timer-sub-msg').innerText = "Generating Secure Link";
+            
+            // Download Stack (Sandwich): Button -> 320x50 -> 300x250 -> Button
+            stack.innerHTML = `
+                <button onclick="window.open('https://www.profitableratecpmnetwork.com/c946hyefut?key=1bc48e7a796f76d9d2995279f10f3c8c', '_blank')" class="w-full bg-gradient-to-r from-blue-700 to-blue-500 text-white font-black py-4 rounded-xl shadow-[0_0_20px_rgba(37,99,235,0.4)] animate-pulse flex flex-col items-center">
+                    <span class="text-lg">SERVER 1: HD QUALITY</span><span class="text-[10px] font-normal text-blue-100 mt-1">Click here to verify and speed up</span>
+                </button>
+                <div id="fs-ad-dl-1" class="w-full flex justify-center mt-2"></div>
+                <div id="fs-ad-dl-2" class="w-full flex justify-center mb-2"></div>
+                <button onclick="window.open('https://www.profitableratecpmnetwork.com/c946hyefut?key=1bc48e7a796f76d9d2995279f10f3c8c', '_blank')" class="w-full bg-gradient-to-r from-green-700 to-green-500 text-white font-black py-4 rounded-xl shadow-[0_0_20px_rgba(22,163,74,0.4)] flex flex-col items-center">
+                    <span class="text-lg">SERVER 2: FAST STREAM</span><span class="text-[10px] font-normal text-green-100 mt-1">No buffering (Recommended)</span>
+                </button>
+            `;
+            setTimeout(() => {
+                injectAd('fs-ad-dl-1', '5919d5a8a26c28e4a3df2b75d2fafb8e', 320, 50);
+                injectAd('fs-ad-dl-2', '70529edcf380574be4f66f1169017412', 300, 250);
+            }, 300);
+        }
+        
         executeTimerLogic();
     }
 
-    function closeFullScreenAd() { clearInterval(adIntervalTimer); isAdPlaying = false; document.getElementById('fullscreen-ad-modal').classList.remove('active'); if (adCallback) { adCallback(); adCallback = null; } }
+    function closeFullScreenAd() { clearInterval(adIntervalTimer); isAdPlaying = false; document.getElementById('fullscreen-ad-modal').classList.remove('active'); document.getElementById('dynamic-ad-stack').innerHTML = ''; if (adCallback) { adCallback(); adCallback = null; } }
 
     function handleWatchNowClick() {
-        showFullScreenAd(() => {
+        showFullScreenAd('download', () => {
             openModal('premium-notice-modal');
         });
     }
 
     function startAdTimer() {
         if(document.body.classList.contains('admin-mode')) { closeModal('quality-modal'); openModal('ad-timer-modal'); document.getElementById('countdown-timer').classList.add('hidden'); document.getElementById('final-dl-buttons').classList.remove('hidden'); saveToDownloads(); return; }
-        closeModal('quality-modal'); openModal('ad-timer-modal'); adTimeLeft = 30; currentAdAction = 'download'; isAdPlaying = true; document.getElementById('countdown-timer').innerText = adTimeLeft; document.getElementById('final-dl-buttons').classList.add('hidden'); document.getElementById('countdown-timer').classList.remove('hidden'); executeTimerLogic();
+        closeModal('quality-modal'); openModal('ad-timer-modal'); adTimeLeft = 15; currentAdAction = 'download_timer'; isAdPlaying = true; document.getElementById('countdown-timer').innerText = adTimeLeft; document.getElementById('final-dl-buttons').classList.add('hidden'); document.getElementById('countdown-timer').classList.remove('hidden'); executeTimerLogic();
     }
 
     function openMovieDetail(movie) { 
@@ -831,7 +787,7 @@
     function checkLikeStatus() { let likes = JSON.parse(localStorage.getItem('novaflix_likes')) || []; let btn = document.getElementById('btn-like'); if(likes.includes(currentActiveMovie.id)) { btn.classList.add('active-icon', 'text-netflixRed'); } else { btn.classList.remove('active-icon', 'text-netflixRed'); } }
     function toggleLike() { let likes = JSON.parse(localStorage.getItem('novaflix_likes')) || []; let index = likes.indexOf(currentActiveMovie.id); if(index > -1) { likes.splice(index, 1); } else { likes.push(currentActiveMovie.id); } localStorage.setItem('novaflix_likes', JSON.stringify(likes)); checkLikeStatus(); }
     function checkDownloadStatus() { let btn = document.getElementById('btn-download'); btn.classList.remove('green-icon'); btn.innerHTML = `<i class="fa-solid fa-download text-lg"></i><span class="text-[9px] font-bold">Download</span>`; }
-    function triggerDownload() { showFullScreenAd(() => { openModal('quality-modal'); }); }
+    function triggerDownload() { showFullScreenAd('download', () => { openModal('quality-modal'); }); }
     function shareApp() { if (navigator.share) { navigator.share({ title: 'NovaFlix', text: `Dekho "${currentActiveMovie.title}" NovaFlix par!`, url: window.location.href }).catch(console.error); } else { alert("Link Copied!"); } }
 
     function populateRecommended(category, excludeId) { let recMovies = allMoviesArray.filter(m => m.cat === category && m.id !== excludeId); if(recMovies.length === 0) recMovies = allMoviesArray.filter(m => m.id !== excludeId).slice(0, 5); const slider = document.getElementById('recommended-slider'); slider.innerHTML = ''; recMovies.forEach(m => { slider.innerHTML += `<div class="slider-item-small" onclick='openMovieDetail(${JSON.stringify(m).replace(/'/g, "&apos;")})'><img src="${m.poster}" class="w-full aspect-[2/3] object-cover opacity-90"><div class="absolute bottom-0 w-full bg-black/80 text-[9px] text-white p-1 text-center truncate">${m.title}</div></div>`; }); }
@@ -861,12 +817,16 @@
             return;
         }
         
+        let dlAdIndex = 0;
         dls.forEach((m, index) => { 
             grid.innerHTML += `<div class="movie-card"><div class="absolute top-1 right-1 bg-black/80 rounded-full w-6 h-6 flex justify-center items-center z-20 shadow cursor-pointer text-red-500" onclick="removeDownload(${index})"><i class="fa-solid fa-trash text-[10px]"></i></div><img src="${m.poster}" class="w-full aspect-[2/3] object-cover opacity-90" onclick='openMovieDetail(${JSON.stringify(m).replace(/'/g, "&apos;")})'><div class="absolute bottom-0 w-full bg-black/80 text-[9px] text-white p-1 text-center truncate font-semibold">${m.title}</div></div>`; 
             
-            // 🔥 DYNAMIC SMART LINK AD EVERY 3 MOVIES IN DOWNLOADS
-            if ((index + 1) % 3 === 0 && (index + 1) !== dls.length) {
-                grid.innerHTML += `<div class="col-span-full my-2 w-full shadow-lg rounded overflow-hidden cursor-pointer border border-gray-700" onclick="window.open('https://www.profitableratecpmnetwork.com/c946hyefut?key=1bc48e7a796f76d9d2995279f10f3c8c', '_blank')"><div class="w-full bg-[#1a1d24] flex items-center justify-center p-3 text-xs font-bold text-gray-400 gap-2"><i class="fa-solid fa-gift text-yellow-500"></i> Click Here To Unlock Premium Content</div></div>`;
+            // 🔥 Har 4 downloads ke baad 160x300 ad
+            if ((index + 1) % 4 === 0 && (index + 1) !== dls.length) {
+                dlAdIndex++;
+                let adContainerId = `dl-grid-ad-${dlAdIndex}`;
+                grid.innerHTML += `<div class="movie-card col-span-2 sm:col-span-1 flex justify-center items-center bg-[#1a1d24] border border-gray-700" id="${adContainerId}"></div>`;
+                setTimeout(() => injectAd(adContainerId, '90eb57655a8ece26f771da3c6879371c', 160, 300), 500);
             }
         }); 
     }
@@ -949,7 +909,7 @@
             document.getElementById('m-lang').value = m.language || 'Hindi'; 
             document.getElementById('m-quality').value = m.quality || '1080p HD'; 
             document.getElementById('m-new').checked = m.isNew || false; 
-            document.getElementById('m-slider-expiry').value = m.sliderExpiry || ''; // 🔥 LOAD Expiry Date
+            document.getElementById('m-slider-expiry').value = m.sliderExpiry || ''; 
             document.getElementById('m-is-series').checked = m.isSeries || false; 
             if(m.isSeries) { document.getElementById('episodes-admin-list').innerHTML = ''; if(m.episodes) m.episodes.forEach(ep => addAdminEpisodeField(ep.name, ep.stream, ep.dl)); } else { document.getElementById('m-stream').value = m.stream || ''; document.getElementById('m-dl').value = m.dl || ''; } toggleSeriesMode(); document.getElementById('save-movie-btn').innerText = "Update Content"; 
         } 
@@ -967,7 +927,7 @@
             language: document.getElementById('m-lang').value || 'Hindi', 
             quality: document.getElementById('m-quality').value || '1080p HD', 
             isNew: document.getElementById('m-new').checked, 
-            sliderExpiry: document.getElementById('m-slider-expiry').value, // 🔥 SAVE Expiry Date
+            sliderExpiry: document.getElementById('m-slider-expiry').value,
             isSeries: isSeries 
         }; 
         if(!data.title || !data.cat) return alert('Title and Category are required!'); 
@@ -978,7 +938,7 @@
     function resetAdminForm() { 
         document.getElementById('m-id').value = ''; 
         document.querySelectorAll('#admin-dash-modal input[type="text"]').forEach(i=>i.value=''); 
-        document.getElementById('m-slider-expiry').value = ''; // 🔥 CLEAR Expiry Field
+        document.getElementById('m-slider-expiry').value = ''; 
         document.getElementById('m-new').checked = false; 
         document.getElementById('m-is-series').checked = false; 
         document.getElementById('episodes-admin-list').innerHTML = ''; 
