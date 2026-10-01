@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>NovaFlix - Download Movie & Streaming App</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = { theme: { extend: { colors: { netflixRed: '#E50914', darkBg: '#0f121a' } } } }
+    </script>
+</head>
+<body class="bg-darkBg text-white font-sans min-h-screen flex flex-col justify-between items-center p-4">
+
+    <!-- Top App Info -->
+    <div class="w-full max-w-md flex items-center gap-3 py-4 border-b border-gray-800">
+        <div class="w-12 h-12 bg-gradient-to-br from-[#ff0a16] to-[#E50914] rounded-2xl flex items-center justify-center shadow-[0_0_15px_rgba(229,9,20,0.5)] font-black text-xl">
+            N
+        </div>
+        <div>
+            <h1 class="text-lg font-black tracking-wide">NovaFlix</h1>
+            <p class="text-xs text-gray-400">Movie & Streaming App</p>
+        </div>
+    </div>
+
+    <!-- Main Center Hero Section -->
+    <div class="w-full max-w-md flex flex-col items-center text-center my-auto py-6">
+        <h2 class="text-3xl font-black uppercase tracking-wider mb-2 text-transparent bg-clip-text bg-gradient-to-r from-white to-gray-400">
+            Download NovaFlix App
+        </h2>
+        <p class="text-xs text-gray-400 mb-6">
+            Bina kisi rukawat ke latest movies, web series aur HD streaming ka maza lijiye apne mobile par.
+        </p>
+
+        <!-- App Mockup Preview Box -->
+        <div class="w-full bg-[#1a1d24] border border-gray-800 rounded-2xl p-4 shadow-2xl mb-8 relative overflow-hidden">
+            <div class="absolute inset-0 bg-red-600/5 blur-xl"></div>
+            <div class="aspect-video bg-black rounded-lg flex flex-col items-center justify-center border border-gray-700 relative z-10 overflow-hidden">
+                <i class="fa-solid fa-play-circle text-netflixRed text-5xl mb-2 animate-bounce"></i>
+                <span class="text-xs font-bold text-gray-300">NovaFlix HD Player</span>
+            </div>
+        </div>
+
+        <!-- Download App Button with Website Link -->
+        <a href="https://nova-flix-one.vercel.app/" class="w-full bg-gradient-to-r from-amber-500 to-amber-600 text-black font-black py-4 rounded-xl shadow-[0_0_20px_rgba(245,158,11,0.4)] flex items-center justify-center gap-2 active:scale-95 transition-transform text-base uppercase tracking-wider">
+            <i class="fa-solid fa-download text-lg"></i> Download App
+        </a>
+        <span class="text-[10px] text-gray-500 mt-2">Latest Version 2.0 • Safe & Secure</span>
+    </div>
+
+    <!-- Features Section -->
+    <div class="w-full max-w-md grid grid-cols-3 gap-3 my-4 text-center">
+        <div class="bg-[#1a1d24] p-3 rounded-xl border border-gray-800">
+            <i class="fa-solid fa-bolt text-yellow-500 text-lg mb-1"></i>
+            <div class="text-[10px] font-bold text-gray-300">Fast Streaming</div>
+        </div>
+        <div class="bg-[#1a1d24] p-3 rounded-xl border border-gray-800">
+            <i class="fa-solid fa-shield-halved text-green-500 text-lg mb-1"></i>
+            <div class="text-[10px] font-bold text-gray-300">100% Safe</div>
+        </div>
+        <div class="bg-[#1a1d24] p-3 rounded-xl border border-gray-800">
+            <i class="fa-solid fa-film text-netflixRed text-lg mb-1"></i>
+            <div class="text-[10px] font-bold text-gray-300">HD Quality</div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="w-full max-w-md text-center py-3 border-t border-gray-800 text-[10px] text-gray-500">
+        © 2026 NovaFlix. All rights reserved.
+    </div>
+
+</body>
+</html>
